@@ -75,7 +75,7 @@ def entrena(inputs,red,n_red,t_ent = 8,t_sal = -1):
     """
     Entrena una red a partir de un conjunto de entradas y una salida
     """
-    for i in range(10000): #010 epocas
+    for i in range(100): #010 epocas
         for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
             entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
             salida = i[:, t_sal]
