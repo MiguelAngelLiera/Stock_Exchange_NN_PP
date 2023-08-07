@@ -6,11 +6,6 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-import numpy as np
-
-def tan_sigmoid(x):
-    return np.tanh(np.exp(x))
-
 class NARNN(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, num_layers):
         super(NARNN, self).__init__()
@@ -31,7 +26,7 @@ class NARNN(nn.Module):
         out = self.fc1(out[:, -1, :]) 
         return out"""
 
-        x = tan_sigmoid(self.fc1(x))
+        x = torch.sigmoid(self.fc1(x))
         x = F.logsigmoid(self.fc2(x))
         x = self.fc3(x)
         return x

@@ -52,55 +52,7 @@ def forma_entrada(a, input_size):
         subarreglos = subarreglos[:-1]#elimina la ultima entrada en caso de que no tenga el taño correcto
     return subarreglos
 
-
-
-#se trata de los conjuntos de todas las entradas y salidas para todas las redes
-entradas_por_red = []
-salidas_por_red = []
-# Entrenar la red neuronal
-
-
-def genera_prediccion(c_pruebas,red):
-    serie = torch.tensor([])
-    for _ in c_pruebas:
-        predicted_output = red(_[:, :8])
-        #print("Salida predecida:")
-        #print(predicted_output)
-        #print(_[:, :8])
-        serie = torch.cat((serie, _[:, :8], predicted_output), dim=1)
-
-    return serie
-
-# def entrena(red,n_red,inputs,t_ent = 8,t_sal = -1):
-#     """
-#     Entrena una red a partir de un conjunto de entradas y una salida
-#     """
-#     #print("Entrena")
-#     for i in range(1000): #010 epocas
-#         for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
-#             #print("i:")
-#             #print(i)
-#             entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
-#             #print(entradas)
-#             salida = i[:, t_sal]
-#             #print(salida)
-#             train(entradas,salida,red)
-
-# # Función de entrenamiento
-# def train(input_data, target, modelo):
-#     #target_data = torch.tensor([1.0]).unsqueeze(0)   # Valor objetivo
-#     # Definir la función de pérdida y el optimizador
-#     criterion = nn.MSELoss()
-#     optimizer = optim.LBFGS(modelo.parameters(), lr=0.1)
-#     def closure():
-#         optimizer.zero_grad()
-#         output = modelo(input_data)
-#         loss = criterion(output, target)
-#         loss.backward()
-#         return loss.numpy()
-
-#     optimizer.step(closure)
-
+# Función de entrenamiento
 def train(red,input_data, target, modelo):
     #target_data = torch.tensor([1.0]).unsqueeze(0)   # Valor objetivo
     # Definir la función de pérdida y el optimizador
@@ -119,7 +71,7 @@ def train(red,input_data, target, modelo):
 entradas_por_red = []
 salidas_por_red = []
 # Entrenar la red neuronal
-def entrena(red,n_red,inputs,t_ent = 8,t_sal = -1):
+def entrena(inputs,red,n_red,t_ent = 8,t_sal = -1):
     """
     Entrena una red a partir de un conjunto de entradas y una salida
     """
@@ -136,24 +88,13 @@ def entrena(red,n_red,inputs,t_ent = 8,t_sal = -1):
             # optimizer.step()
             train(red,entradas,salida,red)
 
-def genera_salida(vect,tam,red):
-    #print(vect)
-    print(len(vect))
-    c = vect[:tam]
-    o = vect[:tam]
-    copia_prueba_0 = vect.copy()
-    for i in range(len(vect)-(tam-1)):
-        print(">>>>>>i: " + str(i))
-        print("Nueva Entrada:")
-        print(torch.Tensor(c))
-        predicted_output = red(torch.Tensor(c))
-        print("Prediction: " + str(predicted_output.item()))
-        if(i+tam < len(vect)):
-            copia_prueba_0[i+tam]=predicted_output.item()
-            c = np.concatenate((np.array(copia_prueba_0[i+1:i+tam]),np.array([predicted_output.item()])))
-            o = np.concatenate((np.array(o),np.array([predicted_output.item()])))
-            #print([predicted_output.item()])
-            #print(prueba[0][i:i+7])
-            print(np.concatenate((np.array(copia_prueba_0[i+1:i+tam]),np.array([predicted_output.item()]))))
+def genera_prediccion(c_pruebas,red):
+    serie = torch.tensor([])
+    for _ in c_pruebas:
+        predicted_output = red(_[:, :8])
+        #print(predicted_output)
+        #print("AAAAA")
+        #print(_[:, :8])
+        serie = torch.cat((serie, _[:, :8], predicted_output), dim=1)
 
-    return o
+    return serie
