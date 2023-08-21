@@ -2,6 +2,8 @@ import torch, numpy as np
 import torch.nn as nn
 import torch.optim as optim
 
+criterion = nn.MSELoss()
+
 def normalizar(arr):
     """
     Normaliza cada uno de los elementos de un arreglo.
@@ -104,19 +106,41 @@ def genera_prediccion(c_pruebas,red):
 
 #     optimizer.step(closure)
 
+def error(modelo,input_data,target):
+    return modelo(input_data)-target
+
+
 def train(red,input_data, target, modelo):
     #target_data = torch.tensor([1.0]).unsqueeze(0)   # Valor objetivo
     # Definir la función de pérdida y el optimizador
-    criterion = nn.MSELoss()
+    
     optimizer = optim.LBFGS(red.parameters(), lr=0.1)
     def closure():
         optimizer.zero_grad()
-        output = modelo(input_data)
+        output = error(modelo,input_data,target)
+        ##loss = criterion(output,target)
         loss = criterion(output, target)
+        #loss = torch.sum(output ** 2)##criterion(output, target)
         loss.backward()
         return loss
 
     optimizer.step(closure)
+
+def train_SGD(red,input_data, target, modelo):
+    optimizer = optim.SGD(red.parameters(), lr=0.1)#,maximize=True)
+    optimizer.zero_grad()
+    output = modelo(input_data)
+    loss = criterion(output, target)
+    loss.backward()
+    optimizer.step()
+
+def train_ASGD(red,input_data, target, modelo):
+    optimizer = optim.ASGD(red.parameters(), lr=0.1)
+    optimizer.zero_grad()
+    output = modelo(input_data)
+    loss = criterion(output, target)
+    loss.backward()
+    optimizer.step()
 
 #se trata de los conjuntos de todas las entradas y salidas para todas las redes
 entradas_por_red = []
@@ -137,7 +161,7 @@ def entrena(red,n_red,inputs,epocas=1000,t_ent = 8,t_sal = -1):
             # optimizer.zero_grad()
             # loss.backward()
             # optimizer.step()
-            train(red,entradas,salida,red)
+            train_SGD(red,entradas,salida,red)
 
 def genera_salida(vect,tam,red):
     #print(vect)
