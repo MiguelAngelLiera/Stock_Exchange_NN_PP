@@ -127,7 +127,7 @@ def train(red,input_data, target, modelo):
     optimizer.step(closure)
 
 def train_SGD(red,input_data, target, modelo):
-    optimizer = optim.SGD(red.parameters(), lr=0.1)#,maximize=True)
+    optimizer = optim.SGD(red.parameters(), lr=0.1, momentum=0.4)#,maximize=True)
     optimizer.zero_grad()
     output = modelo(input_data)
     loss = criterion(output, target)
