@@ -1,126 +1,36 @@
 import torch
-from . import _functional as F
-from .optimizer import Optimizer, required
+import numpy as np
+from torch.nn import Module
+import torch.nn.functional as F
+
+class Net(Module):
+    def __init__(self, h, w):
+        super(Net, self).__init__()
+        self.c1 = torch.nn.Conv2d(1, 32, 3, 1, 1)
+        self.f2 = torch.nn.Linear(32 * h * w, 5)
+
+    def forward(self, x):
+        x = self.c1(x)
+        x = x.view(x.size(0), -1)
+        x = self.f2(x)
+        return x
+
+def haha(a, b, c, d):
+    p = [a.view(32, 1, 3, 3), b, c.view(5, 32 * 12 * 12), d]
+    x = torch.randn(size=[8, 1, 12, 12], dtype=torch.float32)
+    y = torch.randint(0, 5, [8])
+    x = F.conv2d(x, p[0], p[1], 1, 1)
+    x = x.view(x.size(0), -1)
+    x = F.linear(x, p[2], p[3])
+    loss = F.cross_entropy(x, y)
+    return loss
 
 
-class LM(Optimizer):
-    r"""Implements Levenberg-Marquardt.
+if __name__ == '__main__':
+    net = Net(12, 12)
 
-    Args:
-        params (iterable): iterable of parameters to optimize or dicts defining
-            parameter groups
-        lr (float): learning rate
-        momentum (float, optional): momentum factor (default: 0)
-        weight_decay (float, optional): weight decay (L2 penalty) (default: 0)
-        dampening (float, optional): dampening for momentum (default: 0)
-        nesterov (bool, optional): enables Nesterov momentum (default: False)
-        maximize (bool, optional): maximize the params based on the objective, instead of
-            minimizing (default: False)
+    h = torch.autograd.functional.hessian(haha, tuple([_.view(-1) for _ in net.parameters()]))
 
-    Example:
-        >>> optimizer = torch.optim.SGD(model.parameters(), lr=0.1, momentum=0.9)
-        >>> optimizer.zero_grad()
-        >>> loss_fn(model(input), target).backward()
-        >>> optimizer.step()
-
-    __ http://www.cs.toronto.edu/%7Ehinton/absps/momentum.pdf
-
-    .. note::
-        The implementation of SGD with Momentum/Nesterov subtly differs from
-        Sutskever et. al. and implementations in some other frameworks.
-
-        Considering the specific case of Momentum, the update can be written as
-
-        .. math::
-            \begin{aligned}
-                v_{t+1} & = \mu * v_{t} + g_{t+1}, \\
-                p_{t+1} & = p_{t} - \text{lr} * v_{t+1},
-            \end{aligned}
-
-        where :math:`p`, :math:`g`, :math:`v` and :math:`\mu` denote the
-        parameters, gradient, velocity, and momentum respectively.
-
-        This is in contrast to Sutskever et. al. and
-        other frameworks which employ an update of the form
-
-        .. math::
-            \begin{aligned}
-                v_{t+1} & = \mu * v_{t} + \text{lr} * g_{t+1}, \\
-                p_{t+1} & = p_{t} - v_{t+1}.
-            \end{aligned}
-
-        The Nesterov version is analogously modified.
-    """
-
-    def __init__(self, params, lr=required, momentum=0, dampening=0,
-                 weight_decay=0, nesterov=False, *, maximize=False):
-        if lr is not required and lr < 0.0:
-            raise ValueError("Invalid learning rate: {}".format(lr))
-        if momentum < 0.0:
-            raise ValueError("Invalid momentum value: {}".format(momentum))
-        if weight_decay < 0.0:
-            raise ValueError("Invalid weight_decay value: {}".format(weight_decay))
-
-        defaults = dict(lr=lr, momentum=momentum, dampening=dampening,
-                        weight_decay=weight_decay, nesterov=nesterov, maximize=maximize)
-        if nesterov and (momentum <= 0 or dampening != 0):
-            raise ValueError("Nesterov momentum requires a momentum and zero dampening")
-        super(SGD, self).__init__(params, defaults)
-
-    def __setstate__(self, state):
-        super(SGD, self).__setstate__(state)
-        for group in self.param_groups:
-            group.setdefault('nesterov', False)
-            group.setdefault('maximize', False)
-
-    @torch.no_grad()
-    def step(self, closure=None):
-        """Performs a single optimization step.
-
-        Args:
-            closure (callable, optional): A closure that reevaluates the model
-                and returns the loss.
-        """
-        loss = None
-        if closure is not None:
-            with torch.enable_grad():
-                loss = closure()
-
-        for group in self.param_groups:
-            params_with_grad = []
-            d_p_list = []
-            momentum_buffer_list = []
-            weight_decay = group['weight_decay']
-            momentum = group['momentum']
-            dampening = group['dampening']
-            nesterov = group['nesterov']
-            maximize = group['maximize']
-            lr = group['lr']
-
-            for p in group['params']:
-                if p.grad is not None:
-                    params_with_grad.append(p)
-                    d_p_list.append(p.grad)
-
-                    state = self.state[p]
-                    if 'momentum_buffer' not in state:
-                        momentum_buffer_list.append(None)
-                    else:
-                        momentum_buffer_list.append(state['momentum_buffer'])
-
-            F.sgd(params_with_grad,
-                  d_p_list,
-                  momentum_buffer_list,
-                  weight_decay=weight_decay,
-                  momentum=momentum,
-                  lr=lr,
-                  dampening=dampening,
-                  nesterov=nesterov,
-                  maximize=maximize,)
-
-            # update momentum_buffers in state
-            for p, momentum_buffer in zip(params_with_grad, momentum_buffer_list):
-                state = self.state[p]
-                state['momentum_buffer'] = momentum_buffer
-
-        return loss
+    print(h)
+    
+    # Then we just need to fix tensors in h into a big matrix
