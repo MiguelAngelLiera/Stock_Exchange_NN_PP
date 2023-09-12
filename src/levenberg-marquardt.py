@@ -1,36 +1,20 @@
 import torch
 import numpy as np
 from torch.nn import Module
+import torch.nn as nn
 import torch.nn.functional as F
+from NARNN import NARNN
 
-class Net(Module):
-    def __init__(self, h, w):
-        super(Net, self).__init__()
-        self.c1 = torch.nn.Conv2d(1, 32, 3, 1, 1)
-        self.f2 = torch.nn.Linear(32 * h * w, 5)
+class LM(self):
+    def __init__(red, lr=0.1, λ = 0.1):
+        self.red = red
+        self.lr = lr
+        self.λ = λ
 
-    def forward(self, x):
-        x = self.c1(x)
-        x = x.view(x.size(0), -1)
-        x = self.f2(x)
-        return x
+red = NARNN(input_dim=8, hidden_dim=0, output_dim=1, num_layers=0)
+input = torch.Tensor([1,2,3,4,5,6,7,8])
 
-def haha(a, b, c, d):
-    p = [a.view(32, 1, 3, 3), b, c.view(5, 32 * 12 * 12), d]
-    x = torch.randn(size=[8, 1, 12, 12], dtype=torch.float32)
-    y = torch.randint(0, 5, [8])
-    x = F.conv2d(x, p[0], p[1], 1, 1)
-    x = x.view(x.size(0), -1)
-    x = F.linear(x, p[2], p[3])
-    loss = F.cross_entropy(x, y)
-    return loss
-
-
-if __name__ == '__main__':
-    net = Net(12, 12)
-
-    h = torch.autograd.functional.hessian(haha, tuple([_.view(-1) for _ in net.parameters()]))
-
-    print(h)
-    
-    # Then we just need to fix tensors in h into a big matrix
+print(input)
+entrada = input #la entrada se da como un parametro global
+salida_esperada = torch.tensor([-0.0834]) #lo mismo para la salida esperada
+λ = 0.1
