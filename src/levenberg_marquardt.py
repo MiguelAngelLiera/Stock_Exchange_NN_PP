@@ -59,22 +59,22 @@ class LM:
         
         x_n = self.aux_convierte_parametros() #concatena los paremetros de la red en un solo vector unidimensional
         h = torch.autograd.functional.hessian(self.calcula_perdida, x_n) #calculamos la matriz hessiana
-        print("tamaño de h: " + str(h.shape))
+        #print("tamaño de h: " + str(h.shape))
         grad_f = torch.autograd.grad(self.calcula_perdida(x_n), x_n)[0] #calculamos el gradiente de la funcion
         grad_f = torch.transpose(torch.unsqueeze(grad_f, 0),0, 1) # calculamos la transpuesta del gradiente
-        print("tamaño de grad " + str(grad_f.shape))
+        #print("tamaño de grad " + str(grad_f.shape))
         #λ*torch.eye(211): multiplica un escalar por la matriz identidad
         x_n1 = torch.matmul(-torch.inverse(h+self.λ*torch.eye(211)),grad_f) 
         #print("x_n antes: " + str(x_n))
         x_n = x_n.reshape(211, 1)#se le da la forma adecuada para que se pueda sumar con el vector de nuevos pesos
 
-        print("x_n antes1: " + str(x_n))
+        #print("x_n antes1: " + str(x_n))
         #print("x_n1 antes: " + str(x_n1.shape))
         #print("parametros de la red: " + str([i for i in self.red.parameters()]))
         x_n = x_n + x_n1
-        print("transpuesta: " + str(torch.transpose(x_n,0,1)[0]))
+        #print("transpuesta: " + str(torch.transpose(x_n,0,1)[0]))
         self.asigna_parametros(torch.transpose(x_n,0,1)[0],reasignar=True)
-        print("Da un paso")
+        #print("Da un paso")
         
 
     def asigna_parametros(self,*parametros,reasignar=False):
