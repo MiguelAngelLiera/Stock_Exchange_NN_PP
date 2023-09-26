@@ -1,6 +1,7 @@
 import torch, numpy as np
 import torch.nn as nn
 import torch.optim as optim
+from levenberg_marquardt import LM
 
 criterion = nn.MSELoss()
 
@@ -126,10 +127,10 @@ def train(red,input_data, target, modelo):
 
     optimizer.step(closure)
 
-def train_SGD(red,input_data, target, modelo):
+def train_SGD(red,input_data, target):
     optimizer = optim.SGD(red.parameters(), lr=0.1, momentum=0.4)#,maximize=True)
     optimizer.zero_grad()
-    output = modelo(input_data)
+    output = red(input_data)
     loss = criterion(output, target)
     loss.backward()
     optimizer.step()
@@ -161,7 +162,26 @@ def entrena(red,n_red,inputs,epocas=1000,t_ent = 8,t_sal = -1):
             # optimizer.zero_grad()
             # loss.backward()
             # optimizer.step()
-            train_SGD(red,entradas,salida,red)
+            train_SGD(red,entradas,salida)
+
+def entrena_LM(red,n_red,inputs,epocas=1000,t_ent = 8,t_sal = -1):
+    """
+    Entrena una red con el método de Levenverg-Marquardt 
+    a partir de un conjunto de entradas y una salida
+    """
+    for i in range(epocas): #1000 epocas
+        for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
+            entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
+            salida = i[:, t_sal]
+            #for _ in range(100):# se entrena con esas entradas y esa salida
+            # output = red(entradas)
+            # loss = criterion(output, salida)
+
+            # optimizer.zero_grad()
+            # loss.backward()
+            # optimizer.step()
+            lm = LM(red,entradas,salida)
+            lm.exec()
 
 def genera_salida(vect,tam,red):
     #print(vect)
