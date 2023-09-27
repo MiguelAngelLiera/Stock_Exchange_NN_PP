@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from NARNN import NARNN
 
+tan_sigmoid = lambda a : F.tanh(F.sigmoid(a))
 #entrada = torch.Tensor([1,2,3,4,5,6,7,8])   
 #salida_esperada = torch.tensor([-0.0834])
 
@@ -19,8 +20,10 @@ class LM:
         self.c1 = c1
         self.c2 = c2
 
-    def exec(self,epocas = 100):
+    def exec(self,epocas = 20):
+        print("paramtros de LM al iniciar1: " + str([i for i in self.red.parameters()][0]))
         f_i = self.calcula_perdida(self.aux_convierte_parametros())
+        print("paramtros de LM al iniciar2: " + str([i for i in self.red.parameters()][0]))
         for i in range(epocas):
             print("epoca: " + str(i))
             self.step()
@@ -32,7 +35,7 @@ class LM:
             #print("abs: " + str(abs(f_i1 - f_i)))
             #if abs(f_i1 - f_i) < self.c1:
             if abs(f_i1) < self.c1:
-                print("paramtros de LM: " + str([i for i in self.red.parameters()][0]))
+                print("paramtros de LM al finalizar: " + str([i for i in self.red.parameters()][0]))
                 break
                 
             f_i = f_i1
@@ -58,10 +61,14 @@ class LM:
         #Recrea el funcionamiento de la red
 
         #print("parametrosi: " + str(entrada))
-        l1 = F.linear(self.entrada,n_params[0],n_params[1])
-        l2 = F.linear(l1,n_params[2],n_params[3])
+        
+        l1 = tan_sigmoid(F.linear(self.entrada,n_params[0],n_params[1]))
+        l2 = F.logsigmoid(F.linear(l1,n_params[2],n_params[3]))
         salida = F.linear(l2,n_params[4],n_params[5])
+        #print("Pesos funcion: "+ str(n_params))
+        #print("Pesos red: " + str([i for i in self.red.parameters()]))
         print("----->SALIDA OBTENIDA: " + str(salida))
+        print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
         print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
         criterion = nn.MSELoss()
         return criterion(salida,self.salida_esperada)#devuelve la perdida
