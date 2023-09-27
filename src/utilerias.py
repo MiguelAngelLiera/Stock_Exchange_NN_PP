@@ -70,8 +70,7 @@ def genera_prediccion(c_pruebas,red):
     serie = torch.tensor([])
     for _ in c_pruebas:
         predicted_output = red(_[:, :8])
-        #print("Salida predecida:")
-        #print(predicted_output)
+        print("Salida predecida:" + str(predicted_output))
         #print(_[:, :8])
         serie = torch.cat((serie, _[:, :8], predicted_output), dim=1)
 
@@ -164,11 +163,12 @@ def entrena(red,n_red,inputs,epocas=1000,t_ent = 8,t_sal = -1):
             # optimizer.step()
             train_SGD(red,entradas,salida)
 
-def entrena_LM(red,n_red,inputs,epocas=1000,t_ent = 8,t_sal = -1):
+def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
     """
     Entrena una red con el método de Levenverg-Marquardt 
     a partir de un conjunto de entradas y una salida
     """
+    print("paramtros antes: " + str([i for i in red.parameters()][0]))
     for i in range(epocas): #1000 epocas
         for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
             entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
@@ -182,6 +182,7 @@ def entrena_LM(red,n_red,inputs,epocas=1000,t_ent = 8,t_sal = -1):
             # optimizer.step()
             lm = LM(red,entradas,salida)
             lm.exec()
+        print("paramtros despues: " + str([i for i in red.parameters()][0]))
 
 def genera_salida(vect,tam,red):
     #print(vect)

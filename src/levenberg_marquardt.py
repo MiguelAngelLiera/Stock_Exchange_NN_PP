@@ -9,7 +9,8 @@ from NARNN import NARNN
 #salida_esperada = torch.tensor([-0.0834])
 
 class LM:
-    def __init__(self, red, entrada, salida_esperada, lr=0.1, λ = 0.1, c1 = 0.0001, c2 = 0.1):
+    def __init__(self, red, entrada, salida_esperada, lr=0.1, λ = 0.1, c1 = 0.001, c2 = 0.1):
+        print(" >> Entrada: " + str(entrada))
         self.red = red
         self.salida_esperada = salida_esperada
         self.entrada = entrada
@@ -21,16 +22,19 @@ class LM:
     def exec(self,epocas = 100):
         f_i = self.calcula_perdida(self.aux_convierte_parametros())
         for i in range(epocas):
-            #print("epoca: " + str(i))
+            print("epoca: " + str(i))
             self.step()
             f_i1 = self.calcula_perdida(self.aux_convierte_parametros())
             self.λ = 0.5*self.λ if f_i1 < f_i else 2*self.λ #se actualiza la variable lamba segun el rendimiento de la actualizacion
-            #print("nuevo: " + str(f_i1))
-            #print("ant: " + str(f_i))
+            print("ant: " + str(f_i))
+            print("nuevo: " + str(f_i1))
+            
             #print("abs: " + str(abs(f_i1 - f_i)))
             #if abs(f_i1 - f_i) < self.c1:
             if abs(f_i1) < self.c1:
+                print("paramtros de LM: " + str([i for i in self.red.parameters()][0]))
                 break
+                
             f_i = f_i1
 
     def calcula_perdida(self,*parametros):
@@ -57,8 +61,8 @@ class LM:
         l1 = F.linear(self.entrada,n_params[0],n_params[1])
         l2 = F.linear(l1,n_params[2],n_params[3])
         salida = F.linear(l2,n_params[4],n_params[5])
-        #print("----->SALIDA OBTENIDA: " + str(salida))
-
+        print("----->SALIDA OBTENIDA: " + str(salida))
+        print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
         criterion = nn.MSELoss()
         return criterion(salida,self.salida_esperada)#devuelve la perdida
     
@@ -74,7 +78,7 @@ class LM:
         #print("h size(): " +  str(h.size(1)))
         x_n1 = torch.matmul(-torch.inverse(h+self.λ*torch.eye(h.size(1))),grad_f) 
         #print("x_n antes: " + str(x_n))
-        x_n = x_n.reshape(211, 1)#se le da la forma adecuada para que se pueda sumar con el vector de nuevos pesos
+        x_n = x_n.reshape(h.size(1), 1)#se le da la forma adecuada para que se pueda sumar con el vector de nuevos pesos
 
         #print("x_n antes1: " + str(x_n))
         #print("x_n1 antes: " + str(x_n1.shape))
