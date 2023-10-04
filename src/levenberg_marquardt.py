@@ -4,13 +4,15 @@ from torch.nn import Module
 import torch.nn as nn
 import torch.nn.functional as F
 from NARNN import NARNN
+import copy
 
 tan_sigmoid = lambda a : F.tanh(F.sigmoid(a))
+criterion = nn.MSELoss()
 #entrada = torch.Tensor([1,2,3,4,5,6,7,8])   
 #salida_esperada = torch.tensor([-0.0834])
 
 class LM:
-    def __init__(self, red, entrada, salida_esperada, lr=0.1, λ = 0.01, c1 = 0.001, c2 = 0.1):
+    def __init__(self, red, entrada, salida_esperada, lr=0.2, λ = 0.1, c1 = 0.1, c2 = 0.1):
         print(" >> Entrada: " + str(entrada))
         self.red = red
         self.salida_esperada = salida_esperada
@@ -22,34 +24,47 @@ class LM:
         self.epoch = 0
 
     def exec(self,epocas = 20):
+        self.epoch = 0
         perdidas = {}
-        self.epoch = self.epoch+1
+        
         #print("paramtros de LM al iniciar1: " + str([i for i in self.red.parameters()][0]))
+        print(">>Se calcula perdida inicial...")
         f_i = self.calcula_perdida(self.aux_convierte_parametros())
         #print("paramtros de LM al iniciar2: " + str([i for i in self.red.parameters()][0]))
         for i in range(epocas):
-            
+            self.epoch = self.epoch+1
             print("epoca: " + str(self.epoch))
+            red_ant = copy.deepcopy(self.red)
             self.step()
+            print(">>Se calcula perdida despues del paso...")
             f_i1 = self.calcula_perdida(self.aux_convierte_parametros())
             self.λ = 0.5*self.λ if f_i1 < f_i else 2*self.λ #se actualiza la variable lamba segun el rendimiento de la actualizacion
-            print("ant: " + str(f_i))
-            print("nuevo: " + str(f_i1))
+            print("Error Anterior: " + str(f_i.item()))
+            print("Error nuevo: " + str(f_i1.item()))
             
             #print("abs: " + str(abs(f_i1 - f_i)))
             #if abs(f_i1 - f_i) < self.c1 :
-            if abs(f_i1) < self.c1:
-                #print("paramtros de LM al finalizar: " + str([i for i in self.red.parameters()][0]))
+            if(f_i1.item() > f_i.item()):
+                print("ERROR: la modificacion de los pesos dió un error mayor: " + str(f_i1.item()) + ", se regresa al estado anterior de la red")
+                print("paramtros RED_ANT: " + str([i for i in red_ant.parameters()][0]))
+                print("paramtros self.red antes: " + str([i for i in self.red.parameters()][0]))
+                red_error = copy.deepcopy(self.red)
+                self.red = red_ant
+                print("paramtros self.red despues: " + str([i for i in self.red.parameters()][0]))
                 
+                return perdidas
+            if abs(f_i1.item()) < self.c1:
+                #print("paramtros de LM al finalizar: " + str([i for i in self.red.parameters()][0]))
+                print("Se registra la perdida: " + str(self.epoch) + str(f_i1))
                 perdidas[self.epoch] = f_i1
                 #writer.flush()
-                print("Finaliza exec")
+                print("Finaliza exec...")
 
                 return perdidas
-                break
                 
             perdidas[self.epoch] = f_i
             f_i = f_i1
+        return perdidas
             
             
 
@@ -80,16 +95,16 @@ class LM:
         salida = F.linear(l2,n_params[4],n_params[5])
         #print("Pesos funcion: "+ str(n_params))
         #print("Pesos red: " + str([i for i in self.red.parameters()]))
-        print("----->SALIDA OBTENIDA: " + str(salida))
+        #print("----->SALIDA OBTENIDA: " + str(salida))
         print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
         print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
-        criterion = nn.MSELoss()
-        loss = criterion(salida,self.salida_esperada)#devuelve la perdida
+        #print("Salidas: " + str(salida[0]) + ", " + str(self.salida_esperada))
+        loss = criterion(salida[0],self.salida_esperada)#devuelve la perdida
         
         return loss
     
     def step(self):
-        
+        print(">>Inicio de paso (Los valores de la perdida aqui contenidos solo son usados para calculos)")
         x_n = self.aux_convierte_parametros() #concatena los paremetros de la red en un solo vector unidimensional
         h = torch.autograd.functional.hessian(self.calcula_perdida, x_n) #calculamos la matriz hessiana
         #print("tamaño de h: " + str(h.shape))
@@ -98,21 +113,27 @@ class LM:
         #print("tamaño de grad " + str(grad_f.shape))
         #λ*torch.eye(211): multiplica un escalar por la matriz identidad
         #print("h size(): " +  str(h.size(1)))
-        x_n1 = torch.matmul(-torch.inverse(h+self.λ*torch.eye(h.size(1))),grad_f) 
+        h_p = h+self.λ*torch.eye(h.size(1))
+        
+        #print("Determinante: " + str(int(torch.linalg.det(h_p).item()) != 0))
+        #if(int(torch.linalg.det(h_p)) != 0.0):
+         #   print("Determinante: " + str(torch.linalg.det(h_p).item()))
+        x_n1 = torch.matmul(-torch.inverse(h_p),grad_f) 
         #print("x_n antes: " + str(x_n))
         x_n = x_n.reshape(h.size(1), 1)#se le da la forma adecuada para que se pueda sumar con el vector de nuevos pesos
 
         #print("x_n antes1: " + str(x_n))
-        #print("x_n1 antes: " + str(x_n1.shape))
+        #print("x_n1 antes: " + str(x_n1))
+        #print("lr*x_n1 antes: " + str(self.lr*x_n1))
         #print("parametros de la red: " + str([i for i in self.red.parameters()]))
-        x_n = x_n + x_n1
+        x_n = x_n + self.lr*x_n1
         #print("transpuesta: " + str(torch.transpose(x_n,0,1)[0]))
         self.asigna_parametros(torch.transpose(x_n,0,1)[0],reasignar=True)
-        #print("Da un paso")
+        print(">>Fin de paso")
         
 
     def asigna_parametros(self,*parametros,reasignar=False):
-        print("asigna parametros")
+        #print("asigna parametros")
         params = []
         n_params = []
         i=0
@@ -144,7 +165,7 @@ class LM:
         """
         Funcion auxiliar que convierte la entrada de los parametros de una red neuronal a un solo vector
         """
-        print("aux_convierte_parametros")
+        #print("aux_convierte_parametros")
         #print(torch.cat([_.view(-1) for _ in self.red.parameters()], dim = 0))
         return torch.cat([_.view(-1) for _ in self.red.parameters()], dim = 0)
 

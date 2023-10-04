@@ -187,8 +187,10 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
     epoca = 1
     for i in range(epocas): #1000 epocas
         ventana = 1
-        print("INICIO DE EPOCA...")
         for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
+            
+            print("INICIO DE EPOCA...")
+            print(">>Ventana Actual: " + str(ventana))
             entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
             salida = i[:, t_sal]
             #for _ in range(100):# se entrena con esas entradas y esa salida
@@ -201,10 +203,11 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
             lm = LM(red,entradas,salida)
             perdidas = lm.exec()
             print(perdidas)
+            print("paramtros red despues: " + str([i for i in red.parameters()][0]))
             for clave, loss in perdidas.items():
                 
                 perdidas_totales.append(loss)
-            print(">>Ventana Actual: " + str(ventana))
+            
             ventana = ventana + 1
         #print("paramtros despues: " + str([i for i in red.parameters()][0]))
 
