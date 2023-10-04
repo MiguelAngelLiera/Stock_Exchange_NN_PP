@@ -2,8 +2,10 @@ import torch, numpy as np
 import torch.nn as nn
 import torch.optim as optim
 from levenberg_marquardt import LM
+from torch.utils.tensorboard import SummaryWriter
 
 criterion = nn.MSELoss()
+writer = SummaryWriter('logs')
 
 def normalizar(arr):
     """
@@ -55,7 +57,18 @@ def forma_entrada(a, input_size):
         subarreglos = subarreglos[:-1]#elimina la ultima entrada en caso de que no tenga el taño correcto
     return subarreglos
 
-
+def corrimiento_t_1(a, input_size):
+    """
+    Dado un arreglo, parte a este correspondiendo a la entrada de la red neuronal, hacidendo un corrimiento
+    temporal de 1.
+    """
+    subarreglos = []
+    for i in range(0, len(a), 1):
+        subarreglo = torch.Tensor(a[i:i+input_size]).unsqueeze(0)
+        subarreglos.append(subarreglo)
+        if(subarreglos[-1].shape[1] != input_size):
+            subarreglos = subarreglos[:-1]#elimina la ultima entrada en caso de que no tenga el taño correcto
+    return subarreglos
 
 #se trata de los conjuntos de todas las entradas y salidas para todas las redes
 entradas_por_red = []
@@ -169,7 +182,12 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
     a partir de un conjunto de entradas y una salida
     """
     print("paramtros antes: " + str([i for i in red.parameters()][0]))
+    perdidas_totales = []
+    
+    epoca = 1
     for i in range(epocas): #1000 epocas
+        ventana = 1
+        print("INICIO DE EPOCA...")
         for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
             entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
             salida = i[:, t_sal]
@@ -181,8 +199,22 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
             # loss.backward()
             # optimizer.step()
             lm = LM(red,entradas,salida)
-            lm.exec()
-        print("paramtros despues: " + str([i for i in red.parameters()][0]))
+            perdidas = lm.exec()
+            print(perdidas)
+            for clave, loss in perdidas.items():
+                
+                perdidas_totales.append(loss)
+            print(">>Ventana Actual: " + str(ventana))
+            ventana = ventana + 1
+        #print("paramtros despues: " + str([i for i in red.parameters()][0]))
+
+        # for clave, loss in perdidas_totales.items():
+        #     print(f"Clave: {clave}, Valor: {loss}")
+        clave = 1
+        for loss in perdidas_totales:
+            writer.add_scalar('Perdida', loss, clave)
+            clave = clave +1
+        epoca = epoca + 1
 
 def genera_salida(vect,tam,red):
     #print(vect)

@@ -10,7 +10,7 @@ tan_sigmoid = lambda a : F.tanh(F.sigmoid(a))
 #salida_esperada = torch.tensor([-0.0834])
 
 class LM:
-    def __init__(self, red, entrada, salida_esperada, lr=0.1, λ = 0.1, c1 = 0.001, c2 = 0.1):
+    def __init__(self, red, entrada, salida_esperada, lr=0.1, λ = 0.01, c1 = 0.001, c2 = 0.1):
         print(" >> Entrada: " + str(entrada))
         self.red = red
         self.salida_esperada = salida_esperada
@@ -19,13 +19,17 @@ class LM:
         self.λ = λ
         self.c1 = c1
         self.c2 = c2
+        self.epoch = 0
 
     def exec(self,epocas = 20):
-        print("paramtros de LM al iniciar1: " + str([i for i in self.red.parameters()][0]))
+        perdidas = {}
+        self.epoch = self.epoch+1
+        #print("paramtros de LM al iniciar1: " + str([i for i in self.red.parameters()][0]))
         f_i = self.calcula_perdida(self.aux_convierte_parametros())
-        print("paramtros de LM al iniciar2: " + str([i for i in self.red.parameters()][0]))
+        #print("paramtros de LM al iniciar2: " + str([i for i in self.red.parameters()][0]))
         for i in range(epocas):
-            print("epoca: " + str(i))
+            
+            print("epoca: " + str(self.epoch))
             self.step()
             f_i1 = self.calcula_perdida(self.aux_convierte_parametros())
             self.λ = 0.5*self.λ if f_i1 < f_i else 2*self.λ #se actualiza la variable lamba segun el rendimiento de la actualizacion
@@ -33,12 +37,21 @@ class LM:
             print("nuevo: " + str(f_i1))
             
             #print("abs: " + str(abs(f_i1 - f_i)))
-            #if abs(f_i1 - f_i) < self.c1:
+            #if abs(f_i1 - f_i) < self.c1 :
             if abs(f_i1) < self.c1:
-                print("paramtros de LM al finalizar: " + str([i for i in self.red.parameters()][0]))
+                #print("paramtros de LM al finalizar: " + str([i for i in self.red.parameters()][0]))
+                
+                perdidas[self.epoch] = f_i1
+                #writer.flush()
+                print("Finaliza exec")
+
+                return perdidas
                 break
                 
+            perdidas[self.epoch] = f_i
             f_i = f_i1
+            
+            
 
     def calcula_perdida(self,*parametros):
         # params = []
@@ -71,7 +84,9 @@ class LM:
         print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
         print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
         criterion = nn.MSELoss()
-        return criterion(salida,self.salida_esperada)#devuelve la perdida
+        loss = criterion(salida,self.salida_esperada)#devuelve la perdida
+        
+        return loss
     
     def step(self):
         
