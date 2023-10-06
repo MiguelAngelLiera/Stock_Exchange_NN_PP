@@ -114,7 +114,6 @@ class LM:
         #λ*torch.eye(211): multiplica un escalar por la matriz identidad
         #print("h size(): " +  str(h.size(1)))
         h_p = h+self.λ*torch.eye(h.size(1))
-        
         #print("Determinante: " + str(int(torch.linalg.det(h_p).item()) != 0))
         #if(int(torch.linalg.det(h_p)) != 0.0):
          #   print("Determinante: " + str(torch.linalg.det(h_p).item()))
