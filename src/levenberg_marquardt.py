@@ -12,7 +12,7 @@ criterion = nn.MSELoss()
 #salida_esperada = torch.tensor([-0.0834])
 
 class LM:
-    def __init__(self, red, entrada, salida_esperada, lr=0.2, λ = 0.1, c1 = 0.1, c2 = 0.1):
+    def __init__(self, red, entrada, salida_esperada, lr=0.05, λ = 0.1, c1 = 0.2, c2 = 0.1):
         print(" >> Entrada: " + str(entrada))
         self.red = red
         self.salida_esperada = salida_esperada
@@ -23,7 +23,7 @@ class LM:
         self.c2 = c2
         self.epoch = 0
 
-    def exec(self,epocas = 20):
+    def exec(self,epocas = 40):
         self.epoch = 0
         perdidas = {}
         
@@ -34,7 +34,7 @@ class LM:
         for i in range(epocas):
             self.epoch = self.epoch+1
             print("epoca: " + str(self.epoch))
-            red_ant = copy.deepcopy(self.red)
+            self.red_ant = copy.deepcopy(self.red)
             self.step()
             print(">>Se calcula perdida despues del paso...")
             f_i1 = self.calcula_perdida(self.aux_convierte_parametros())
@@ -46,26 +46,31 @@ class LM:
             #if abs(f_i1 - f_i) < self.c1 :
             if(f_i1.item() > f_i.item()):
                 print("ERROR: la modificacion de los pesos dió un error mayor: " + str(f_i1.item()) + ", se regresa al estado anterior de la red")
-                print("paramtros RED_ANT: " + str([i for i in red_ant.parameters()][0]))
+                print("paramtros RED_ANT: " + str([i for i in self.red_ant.parameters()][0]))
                 print("paramtros self.red antes: " + str([i for i in self.red.parameters()][0]))
-                red_error = copy.deepcopy(self.red)
-                self.red = red_ant
+                #red_error = copy.deepcopy(self.red)
+                #self.red = red_ant
+                self.rollback()
                 print("paramtros self.red despues: " + str([i for i in self.red.parameters()][0]))
                 
                 return perdidas
             if abs(f_i1.item()) < self.c1:
                 #print("paramtros de LM al finalizar: " + str([i for i in self.red.parameters()][0]))
-                print("Se registra la perdida: " + str(self.epoch) + str(f_i1))
+                print("Se registra la perdida: " + str(self.epoch) + " " + str(f_i1))
                 perdidas[self.epoch] = f_i1
                 #writer.flush()
                 print("Finaliza exec...")
-
+                print("paramtros red antes de salir del ejec " + str([i for i in self.red.parameters()][0]))
                 return perdidas
                 
             perdidas[self.epoch] = f_i
             f_i = f_i1
         return perdidas
             
+    def rollback(self):
+        # Restaurar los pesos originales
+        for param, original_param in zip(self.red.parameters(), self.red_ant.parameters()):
+            param.data.copy_(original_param.data)
             
 
     def calcula_perdida(self,*parametros):
