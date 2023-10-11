@@ -12,7 +12,7 @@ criterion = nn.MSELoss()
 #salida_esperada = torch.tensor([-0.0834])
 
 class LM:
-    def __init__(self, red, entrada, salida_esperada, lr=0.05, λ = 0.1, c1 = 0.2, c2 = 0.1):
+    def __init__(self, red, entrada, salida_esperada, lr=0.05, λ = 0.1, c1 = 2, c2 = 0.1):
         print(" >> Entrada: " + str(entrada))
         self.red = red
         self.salida_esperada = salida_esperada
@@ -68,6 +68,9 @@ class LM:
         return perdidas
             
     def rollback(self):
+        """
+        Reestablece los parametros originales de la red
+        """
         # Restaurar los pesos originales
         for param, original_param in zip(self.red.parameters(), self.red_ant.parameters()):
             param.data.copy_(original_param.data)
@@ -101,8 +104,8 @@ class LM:
         #print("Pesos funcion: "+ str(n_params))
         #print("Pesos red: " + str([i for i in self.red.parameters()]))
         #print("----->SALIDA OBTENIDA: " + str(salida))
-        print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
-        print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
+        #print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
+        #print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
         #print("Salidas: " + str(salida[0]) + ", " + str(self.salida_esperada))
         loss = criterion(salida[0],self.salida_esperada)#devuelve la perdida
         
@@ -130,7 +133,9 @@ class LM:
         #print("x_n1 antes: " + str(x_n1))
         #print("lr*x_n1 antes: " + str(self.lr*x_n1))
         #print("parametros de la red: " + str([i for i in self.red.parameters()]))
+        print("--Pre-Actualización:-- " + str(x_n))
         x_n = x_n + self.lr*x_n1
+        print("--Post-Actualización:-- " + str(x_n))
         #print("transpuesta: " + str(torch.transpose(x_n,0,1)[0]))
         self.asigna_parametros(torch.transpose(x_n,0,1)[0],reasignar=True)
         print(">>Fin de paso")
