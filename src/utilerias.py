@@ -89,6 +89,23 @@ def genera_prediccion(c_pruebas,red):
 
     return serie
 
+def genera_prediccion_1(c_pruebas,red):
+    """
+    Genera prediccion cada n días, usando los datos que se le dan, no los que predice
+    """
+    serie = torch.tensor(c_pruebas[0][:, :8][0].clone().detach())
+    
+    for _ in c_pruebas:
+        #print("entrada: " + str(_[:, :8]))
+        predicted_output = red(_[:, :8])
+        
+        print("Salida predecida:" + str(predicted_output))
+        #print(_[:, :8])
+        serie = torch.cat((serie, predicted_output[0]))
+        print("serie: " + str(serie))
+    print("serie final: " + str(serie))
+    return serie
+
 # def entrena(red,n_red,inputs,t_ent = 8,t_sal = -1):
 #     """
 #     Entrena una red a partir de un conjunto de entradas y una salida
@@ -204,6 +221,53 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
             perdidas = lm.exec()
             print(perdidas)
             print("paramtros red despues: " + str([i for i in red.parameters()][0]))
+            for clave, loss in perdidas.items():
+                
+                perdidas_totales.append(loss)
+            
+            ventana = ventana + 1
+        #print("paramtros despues: " + str([i for i in red.parameters()][0]))
+
+        # for clave, loss in perdidas_totales.items():
+        #     print(f"Clave: {clave}, Valor: {loss}")
+        clave = 1
+        for loss in perdidas_totales:
+            writer.add_scalar('Perdida', loss, clave)
+            clave = clave +1
+        epoca = epoca + 1
+
+
+def entrena_LM_1(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
+    """
+    Entrena una red con el método de Levenverg-Marquardt 
+    a partir de un conjunto de entradas y una salida
+    Va actualizando los parametros de entrenamiento con los datos que va prediciendo
+    """
+    #print("paramtros antes: " + str([i for i in red.parameters()][0]))
+    perdidas_totales = []
+    
+    epoca = 1
+    for i in range(epocas): #1000 epocas
+        ventana = 1
+        print(inputs[n_red][0])
+        serie = inputs[n_red][0][0,:t_ent]#primeros 8 elementos de la red
+        for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
+            
+            print("INICIO DE EPOCA...")
+            print(">>Ventana Actual: " + str(ventana))
+            print("serie: " + str(serie))
+            #entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
+            entradas = serie[ventana-1:ventana+t_ent-1]
+            print("Entradaas: " + str(entradas))
+            salida = i[:, t_sal]
+
+            #Core del algoritmo
+            lm = LM(red,entradas,salida)
+            perdidas = lm.exec()
+
+            serie = torch.cat((serie,red(entradas)))
+            #print(perdidas)
+            #print("paramtros red despues: " + str([i for i in red.parameters()][0]))
             for clave, loss in perdidas.items():
                 
                 perdidas_totales.append(loss)

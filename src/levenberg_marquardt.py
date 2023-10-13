@@ -23,7 +23,7 @@ class LM:
         self.c2 = c2
         self.epoch = 0
 
-    def exec(self,epocas = 40):
+    def exec(self,epocas = 1):
         self.epoch = 0
         perdidas = {}
         
@@ -104,8 +104,8 @@ class LM:
         #print("Pesos funcion: "+ str(n_params))
         #print("Pesos red: " + str([i for i in self.red.parameters()]))
         #print("----->SALIDA OBTENIDA: " + str(salida))
-        #print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
-        #print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
+        print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
+        print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
         #print("Salidas: " + str(salida[0]) + ", " + str(self.salida_esperada))
         loss = criterion(salida[0],self.salida_esperada)#devuelve la perdida
         
@@ -133,9 +133,9 @@ class LM:
         #print("x_n1 antes: " + str(x_n1))
         #print("lr*x_n1 antes: " + str(self.lr*x_n1))
         #print("parametros de la red: " + str([i for i in self.red.parameters()]))
-        print("--Pre-Actualización:-- " + str(x_n))
+        #print("--Pre-Actualización:-- " + str(x_n))
         x_n = x_n + self.lr*x_n1
-        print("--Post-Actualización:-- " + str(x_n))
+        #print("--Post-Actualización:-- " + str(x_n))
         #print("transpuesta: " + str(torch.transpose(x_n,0,1)[0]))
         self.asigna_parametros(torch.transpose(x_n,0,1)[0],reasignar=True)
         print(">>Fin de paso")
