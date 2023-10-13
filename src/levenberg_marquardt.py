@@ -12,7 +12,7 @@ criterion = nn.MSELoss()
 #salida_esperada = torch.tensor([-0.0834])
 
 class LM:
-    def __init__(self, red, entrada, salida_esperada, lr=0.05, λ = 0.1, c1 = 2, c2 = 0.1):
+    def __init__(self, red, entrada, salida_esperada, lr=1, λ = 0.1, c1 = 2, c2 = 0.1):
         print(" >> Entrada: " + str(entrada))
         self.red = red
         self.salida_esperada = salida_esperada
