@@ -99,11 +99,11 @@ def genera_prediccion_1(c_pruebas,red):
         #print("entrada: " + str(_[:, :8]))
         predicted_output = red(_[:, :8])
         
-        print("Salida predecida:" + str(predicted_output))
+        # print("Salida predecida:" + str(predicted_output))
         #print(_[:, :8])
         serie = torch.cat((serie, predicted_output[0]))
-        print("serie: " + str(serie))
-    print("serie final: " + str(serie))
+    #     print("serie: " + str(serie))
+    # print("serie final: " + str(serie))
     return serie
 
 # def entrena(red,n_red,inputs,t_ent = 8,t_sal = -1):
