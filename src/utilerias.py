@@ -6,6 +6,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 criterion = nn.MSELoss()
 writer = SummaryWriter('logs')
+tolerancia = 0.001
 
 def normalizar(arr):
     """
@@ -198,80 +199,88 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
     Entrena una red con el método de Levenverg-Marquardt 
     a partir de un conjunto de entradas y una salida
     """
-    print("paramtros antes: " + str([i for i in red.parameters()][0]))
+    print("---INICIO DE ENTRENAMIENTO: entrena_LM_pred---")
+    # print("paramtros antes: " + str([i for i in red.parameters()][0]))
     perdidas_totales = []
-    
-    epoca = 1
-    for i in range(epocas): #1000 epocas
+    s_original = []
+    s_pred = []
+    #epoca = 1
+    for epoca in range(epocas): #1000 epocas
+        print(f"---Inicio de epoca: {epoca + 1}--")
         ventana = 1
-        for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
-            
-            print("INICIO DE EPOCA...")
-            print(">>Ventana Actual: " + str(ventana))
-            entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
-            salida = i[:, t_sal]
-            #for _ in range(100):# se entrena con esas entradas y esa salida
-            # output = red(entradas)
-            # loss = criterion(output, salida)
+        for entrada in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
+            # print(">>Ventana Actual: " + str(ventana))
+            entradas = entrada[:, :t_ent][0]#se parten los primeros 8 días y se obtiene el noveno
+            salida = entrada[:, t_sal]
+            print("Salidaas: " + str(entradas))
+            s_original.append(salida.item())
 
-            # optimizer.zero_grad()
-            # loss.backward()
-            # optimizer.step()
             lm = LM(red,entradas,salida)
             perdidas = lm.exec()
-            print(perdidas)
-            print("paramtros red despues: " + str([i for i in red.parameters()][0]))
-            for clave, loss in perdidas.items():
-                
-                perdidas_totales.append(loss)
-            
-            ventana = ventana + 1
-        #print("paramtros despues: " + str([i for i in red.parameters()][0]))
+            # print(perdidas)
+            pred = red(entradas)
+            s_pred.append(pred.item())
 
-        # for clave, loss in perdidas_totales.items():
-        #     print(f"Clave: {clave}, Valor: {loss}")
+            for clave, loss in perdidas.items():
+                perdidas_totales.append(loss)
+            ventana = ventana + 1
+        #print("paramtros final iteración: " + str([i for i in red.parameters()][0]))
+
         clave = 1
         for loss in perdidas_totales:
             writer.add_scalar('Perdida', loss, clave)
             clave = clave +1
-        epoca = epoca + 1
+        #epoca = epoca + 1
+        print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
+        print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
+        perdida = criterion(torch.tensor(s_original),torch.tensor(s_pred))
+        print("<<Perdida: "+str(perdida.item()))
+        if (perdida.item() <= tolerancia):
+            print(f"---epoca final: {epoca+1}--")
+            break
+    print("---FIN DE ENTRENAMIENTO: entrena_LM_pred---")
 
 
-def entrena_LM_1(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
+def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
     """
     Entrena una red con el método de Levenverg-Marquardt 
     a partir de un conjunto de entradas y una salida
     Va actualizando los parametros de entrenamiento con los datos que va prediciendo
     """
+    print("---INICIO DE ENTRENAMIENTO: entrena_LM_pred---")
     #print("paramtros antes: " + str([i for i in red.parameters()][0]))
     perdidas_totales = []
-    
-    epoca = 1
-    for i in range(epocas): #1000 epocas
+    s_original = []
+    s_pred = []
+    #epoca = 1
+    for epoca in range(epocas): #1000 epocas
         ventana = 1
-        print(inputs[n_red][0])
+        print(f"---Inicio de epoca: {epoca+1}--")
+        # print(inputs[n_red][0])
         serie = inputs[n_red][0][0,:t_ent]#primeros 8 elementos de la red
         for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
             
-            print("INICIO DE EPOCA...")
+            # print("INICIO DE EPOCA...")
             print(">>Ventana Actual: " + str(ventana))
-            print("serie: " + str(serie))
+            # print("serie: " + str(serie))
             #entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
             entradas = serie[ventana-1:ventana+t_ent-1]
-            print("Entradaas: " + str(entradas))
+            
             salida = i[:, t_sal]
-
+            print("Salidaas: " + str(entradas))
+            s_original.append(salida.item())
             #Core del algoritmo
             lm = LM(red,entradas,salida)
             perdidas = lm.exec()
 
-            serie = torch.cat((serie,red(entradas)))
+            pred = red(entradas)
+            serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
+            s_pred.append(pred.item())
             #print(perdidas)
             #print("paramtros red despues: " + str([i for i in red.parameters()][0]))
-            for clave, loss in perdidas.items():
-                
-                perdidas_totales.append(loss)
             
+            for clave, loss in perdidas.items():
+                perdidas_totales.append(loss)
             ventana = ventana + 1
         #print("paramtros despues: " + str([i for i in red.parameters()][0]))
 
@@ -281,7 +290,15 @@ def entrena_LM_1(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
         for loss in perdidas_totales:
             writer.add_scalar('Perdida', loss, clave)
             clave = clave +1
-        epoca = epoca + 1
+        print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
+        print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
+        perdida = criterion(torch.tensor(s_original),torch.tensor(s_pred))
+        print("<<Perdida: "+str(perdida.item()))
+        if (perdida.item() <= tolerancia):
+            print(f"---epoca final: {epoca+1}--")
+            break
+        #epoca = epoca + 1
+    print("---FIN DE ENTRENAMIENTO: entrena_LM_pred---")
 
 def genera_salida(vect,tam,red):
     #print(vect)

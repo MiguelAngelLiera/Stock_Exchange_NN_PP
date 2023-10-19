@@ -8,12 +8,13 @@ import copy
 
 tan_sigmoid = lambda a : F.tanh(F.sigmoid(a))
 criterion = nn.MSELoss()
+
 #entrada = torch.Tensor([1,2,3,4,5,6,7,8])   
 #salida_esperada = torch.tensor([-0.0834])
 
 class LM:
-    def __init__(self, red, entrada, salida_esperada, lr=0.7, λ = 0.1, c1 = 2, c2 = 0.1):
-        print(" >> Entrada: " + str(entrada))
+    def __init__(self, red, entrada, salida_esperada, lr=0.01, λ = 0.1, c1 = 2, c2 = 0.1):
+        # print(" >> Entrada: " + str(entrada))
         self.red = red
         self.salida_esperada = salida_esperada
         self.entrada = entrada
@@ -22,6 +23,7 @@ class LM:
         self.c1 = c1
         self.c2 = c2
         self.epoch = 0
+        self.imprimir = False
 
     def exec(self,epocas = 1):
         self.epoch = 0
@@ -33,34 +35,35 @@ class LM:
         #print("paramtros de LM al iniciar2: " + str([i for i in self.red.parameters()][0]))
         for i in range(epocas):
             self.epoch = self.epoch+1
-            print("epoca: " + str(self.epoch))
+            # print("epoca: " + str(self.epoch))
             self.red_ant = copy.deepcopy(self.red)
             self.step()
-            print(">>Se calcula perdida despues del paso...")
+            self.imprimir = True
+            # print(">>Se calcula perdida despues del paso...")
             f_i1 = self.calcula_perdida(self.aux_convierte_parametros())
             self.λ = 0.5*self.λ if f_i1 < f_i else 2*self.λ #se actualiza la variable lamba segun el rendimiento de la actualizacion
-            print("Error Anterior: " + str(f_i.item()))
-            print("Error nuevo: " + str(f_i1.item()))
+            # print("Error Anterior: " + str(f_i.item()))
+            # print("Error nuevo: " + str(f_i1.item()))
             
             #print("abs: " + str(abs(f_i1 - f_i)))
             #if abs(f_i1 - f_i) < self.c1 :
             if(f_i1.item() > f_i.item()):
                 print("ERROR: la modificacion de los pesos dió un error mayor: " + str(f_i1.item()) + ", se regresa al estado anterior de la red")
-                print("paramtros RED_ANT: " + str([i for i in self.red_ant.parameters()][0]))
-                print("paramtros self.red antes: " + str([i for i in self.red.parameters()][0]))
+                # print("paramtros RED_ANT: " + str([i for i in self.red_ant.parameters()][0]))
+                # print("paramtros self.red antes: " + str([i for i in self.red.parameters()][0]))
                 #red_error = copy.deepcopy(self.red)
                 #self.red = red_ant
                 self.rollback()
-                print("paramtros self.red despues: " + str([i for i in self.red.parameters()][0]))
+                # print("paramtros self.red despues: " + str([i for i in self.red.parameters()][0]))
                 
                 return perdidas
             if abs(f_i1.item()) < self.c1:
                 #print("paramtros de LM al finalizar: " + str([i for i in self.red.parameters()][0]))
-                print("Se registra la perdida: " + str(self.epoch) + " " + str(f_i1))
+                # print("Se registra la perdida: " + str(self.epoch) + " " + str(f_i1))
                 perdidas[self.epoch] = f_i1
                 #writer.flush()
                 print("Finaliza exec...")
-                print("paramtros red antes de salir del ejec " + str([i for i in self.red.parameters()][0]))
+                # print("paramtros red antes de salir del ejec " + str([i for i in self.red.parameters()][0]))
                 return perdidas
                 
             perdidas[self.epoch] = f_i
@@ -104,10 +107,11 @@ class LM:
         #print("Pesos funcion: "+ str(n_params))
         #print("Pesos red: " + str([i for i in self.red.parameters()]))
         #print("----->SALIDA OBTENIDA: " + str(salida))
-        print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
-        print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
-        #print("Salidas: " + str(salida[0]) + ", " + str(self.salida_esperada))
-        loss = criterion(salida[0],self.salida_esperada)#devuelve la perdida
+        if(self.imprimir):
+            print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
+            print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
+        print("Salidas: " + str(salida) + ", " + str(self.salida_esperada))
+        loss = criterion(salida,self.salida_esperada)#devuelve la perdida
         
         return loss
     
@@ -172,7 +176,7 @@ class LM:
     
     def aux_convierte_parametros(self):
         """
-        Funcion auxiliar que convierte la entrada de los parametros de una red neuronal a un solo vector
+        Función auxiliar que convierte la entrada de los parametros de una red neuronal a un solo vector
         """
         #print("aux_convierte_parametros")
         #print(torch.cat([_.view(-1) for _ in self.red.parameters()], dim = 0))
