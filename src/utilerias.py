@@ -212,7 +212,7 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
             # print(">>Ventana Actual: " + str(ventana))
             entradas = entrada[:, :t_ent][0]#se parten los primeros 8 días y se obtiene el noveno
             salida = entrada[:, t_sal]
-            print("Salidaas: " + str(entradas))
+            print("Entradass: " + str(entradas))
             s_original.append(salida.item())
 
             lm = LM(red,entradas,salida)
@@ -267,7 +267,7 @@ def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
             entradas = serie[ventana-1:ventana+t_ent-1]
             
             salida = i[:, t_sal]
-            print("Salidaas: " + str(entradas))
+            print("Entradass: " + str(entradas))
             s_original.append(salida.item())
             #Core del algoritmo
             lm = LM(red,entradas,salida)
