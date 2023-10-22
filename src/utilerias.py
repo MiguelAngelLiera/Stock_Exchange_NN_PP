@@ -60,15 +60,19 @@ def forma_entrada(a, input_size):
 
 def corrimiento_t_1(a, input_size):
     """
-    Dado un arreglo, parte a este correspondiendo a la entrada de la red neuronal, hacidendo un corrimiento
+    Dado un arreglo, parte a este correspondiendo a la entrada de la red neuronal y a un elemento de prueba
+    (si la entrada de la red es de n, el tamaño del sub-arreglo es de tamaño n+1), hacidendo un corrimiento
     temporal de 1.
+    : input_size: es el tamaño de los sub-arreglos que queremos crear
     """
     subarreglos = []
-    for i in range(0, len(a), 1):
-        subarreglo = torch.Tensor(a[i:i+input_size]).unsqueeze(0)
+    for i in range(len(a)-input_size+1):
+        subarreglo = torch.Tensor(a[i:i+input_size])
+        
         subarreglos.append(subarreglo)
-        if(subarreglos[-1].shape[1] != input_size):
-            subarreglos = subarreglos[:-1]#elimina la ultima entrada en caso de que no tenga el taño correcto
+        # print("subarreglo:"+ str(subarreglos[-1].shape[0]))
+        # if(subarreglos[-1].shape[0] != input_size):
+        #     subarreglos = subarreglos[:-1]#elimina la ultima entrada en caso de que no tenga el taño correcto
     return subarreglos
 
 #se trata de los conjuntos de todas las entradas y salidas para todas las redes
@@ -90,19 +94,35 @@ def genera_prediccion(c_pruebas,red):
 
     return serie
 
-def genera_prediccion_1(c_pruebas,red):
+def genera_prediccion_1(c_pruebas,red,t_ent):
     """
     Genera prediccion cada n días, usando los datos que se le dan, no los que predice
     """
-    serie = torch.tensor(c_pruebas[0][:, :8][0].clone().detach())
+    serie = torch.tensor(c_pruebas[0][:t_ent].clone().detach())#obtiene los primeros 8 datos del conjunto de prueba
     
     for _ in c_pruebas:
         #print("entrada: " + str(_[:, :8]))
-        predicted_output = red(_[:, :8])
+        predicted_output = red(_[:t_ent])
+        serie = torch.cat((serie, predicted_output))#concatena la salida predicha con los datos predichos anteriores
+    #     print("serie: " + str(serie))
+    # print("serie final: " + str(serie))
+    return serie
+
+def genera_prediccion_predictiva(datos_iniciales,t_ent,t_datos,red):
+    """
+    Genera prediccion cada n días, usando los datos que predice
+    """
+    #serie = torch.tensor(c_pruebas[0][:, :t_ent][0].clone().detach())#obtiene los primeros 8 datos del conjunto de prueba
+    serie = datos_iniciales
+    ventana = 1
+    for _ in range(t_datos):
+        #print("entrada: " + str(_[:, :8]))
+        # predicted_output = red(_[:, :8])
+        predicted_output = red(torch.tensor(serie[ventana-1:ventana-1+t_ent]))
         
         # print("Salida predecida:" + str(predicted_output))
         #print(_[:, :8])
-        serie = torch.cat((serie, predicted_output[0]))
+        serie = torch.cat((serie, predicted_output))#concatena la salida predicha con los datos predichos anteriores
     #     print("serie: " + str(serie))
     # print("serie final: " + str(serie))
     return serie
@@ -210,8 +230,10 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
         ventana = 1
         for entrada in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
             # print(">>Ventana Actual: " + str(ventana))
-            entradas = entrada[:, :t_ent][0]#se parten los primeros 8 días y se obtiene el noveno
-            salida = entrada[:, t_sal]
+            #entradas = entrada[:, :t_ent][0]#se parten los primeros 8 días y se obtiene el noveno
+            entradas = entrada[:t_ent]
+            #salida = entrada[:, t_sal]
+            salida = entrada[t_sal]
             print("Entradass: " + str(entradas))
             s_original.append(salida.item())
 
@@ -257,7 +279,7 @@ def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
         ventana = 1
         print(f"---Inicio de epoca: {epoca+1}--")
         # print(inputs[n_red][0])
-        serie = inputs[n_red][0][0,:t_ent]#primeros 8 elementos de la red
+        serie = inputs[n_red][0][:t_ent]#primeros 8 elementos de la red
         for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
             
             # print("INICIO DE EPOCA...")
@@ -266,7 +288,7 @@ def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
             #entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
             entradas = serie[ventana-1:ventana+t_ent-1]
             
-            salida = i[:, t_sal]
+            salida = i[t_sal]
             print("Entradass: " + str(entradas))
             s_original.append(salida.item())
             #Core del algoritmo
