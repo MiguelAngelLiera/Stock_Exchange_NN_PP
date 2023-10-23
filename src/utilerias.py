@@ -5,7 +5,7 @@ from levenberg_marquardt import LM
 from torch.utils.tensorboard import SummaryWriter
 
 criterion = nn.MSELoss()
-writer = SummaryWriter('logs',purge_orphaned_data=True)
+writer = SummaryWriter('logs')
 tolerancia = 0.001
 
 def normalizar(arr):
