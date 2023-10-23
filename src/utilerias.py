@@ -5,7 +5,7 @@ from levenberg_marquardt import LM
 from torch.utils.tensorboard import SummaryWriter
 
 criterion = nn.MSELoss()
-writer = SummaryWriter('logs')
+writer = SummaryWriter('logs',purge_orphaned_data=True)
 tolerancia = 0.001
 
 def normalizar(arr):
@@ -246,14 +246,15 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
         #print("paramtros final iteración: " + str([i for i in red.parameters()][0]))
 
         clave = 1
-        for loss in perdidas_totales:
-            writer.add_scalar('Perdida', loss, clave)
-            clave = clave +1
+        # for loss in perdidas_totales:
+        #     writer.add_scalar('Perdida', loss, clave)
+        #     clave = clave +1
         #epoca = epoca + 1
         print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
         print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
         perdida = criterion(torch.tensor(s_original),torch.tensor(s_pred))
         print("<<Perdida: "+str(perdida.item()))
+        writer.add_scalar('Perdida', perdida, ventana)
         if (perdida.item() <= tolerancia):
             print(f"---epoca final: {epoca+1}--")
             break
@@ -306,13 +307,14 @@ def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
         # for clave, loss in perdidas_totales.items():
         #     print(f"Clave: {clave}, Valor: {loss}")
         clave = 1
-        for loss in perdidas_totales:
-            writer.add_scalar('Perdida', loss, clave)
-            clave = clave +1
+        # for loss in perdidas_totales:
+        #     writer.add_scalar('Perdida', loss, clave)
+        #     clave = clave +1
         print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
         print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
         perdida = criterion(torch.tensor(s_original),torch.tensor(s_pred))
         print("<<Perdida: "+str(perdida.item()))
+        writer.add_scalar('Perdida', perdida, ventana)
         if (perdida.item() <= tolerancia):
             print(f"---epoca final: {epoca+1}--")
             break
