@@ -88,7 +88,7 @@ def genera_prediccion(c_pruebas,red):
     serie = torch.tensor([])
     for _ in c_pruebas:
         predicted_output = red(_[:, :8])
-        print("Salida predecida:" + str(predicted_output))
+        # print("Salida predecida:" + str(predicted_output))
         #print(_[:, :8])
         serie = torch.cat((serie, _[:, :8], predicted_output), dim=1)
 
@@ -98,14 +98,14 @@ def genera_prediccion_1(c_pruebas,red,t_ent):
     """
     Genera prediccion cada n días, usando los datos que se le dan, no los que predice
     """
-    serie = torch.tensor(c_pruebas[0][:t_ent].clone().detach())#obtiene los primeros 8 datos del conjunto de prueba
+    serie = c_pruebas[0][:t_ent].clone().detach()#obtiene los primeros 8 datos del conjunto de prueba
     
     for _ in c_pruebas:
         #print("entrada: " + str(_[:, :8]))
         predicted_output = red(_[:t_ent])
+        # print("Salida predecida:" + str(predicted_output))
         serie = torch.cat((serie, predicted_output))#concatena la salida predicha con los datos predichos anteriores
     #     print("serie: " + str(serie))
-    # print("serie final: " + str(serie))
     return serie
 
 def genera_prediccion_predictiva(datos_iniciales,t_ent,t_datos,red):
@@ -116,15 +116,12 @@ def genera_prediccion_predictiva(datos_iniciales,t_ent,t_datos,red):
     serie = datos_iniciales
     ventana = 1
     for _ in range(t_datos):
-        #print("entrada: " + str(_[:, :8]))
-        # predicted_output = red(_[:, :8])
-        predicted_output = red(torch.tensor(serie[ventana-1:ventana-1+t_ent]))
+        predicted_output = red(serie[ventana-1:ventana-1+t_ent].clone().detach())
         
-        # print("Salida predecida:" + str(predicted_output))
-        #print(_[:, :8])
+        #print("Salida predecida:" + str(predicted_output))
         serie = torch.cat((serie, predicted_output))#concatena la salida predicha con los datos predichos anteriores
-    #     print("serie: " + str(serie))
-    # print("serie final: " + str(serie))
+        #print("serie: " + str(serie))
+        ventana = ventana + 1
     return serie
 
 # def entrena(red,n_red,inputs,t_ent = 8,t_sal = -1):
