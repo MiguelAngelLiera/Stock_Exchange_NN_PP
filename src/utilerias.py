@@ -231,7 +231,7 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
             entradas = entrada[:t_ent]
             #salida = entrada[:, t_sal]
             salida = entrada[t_sal]
-            print("Entradass: " + str(entradas))
+            # print("Entradass: " + str(entradas))
             s_original.append(salida.item())
 
             lm = LM(red,entradas,salida)
@@ -250,10 +250,10 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
         #     writer.add_scalar('Perdida', loss, clave)
         #     clave = clave +1
         #epoca = epoca + 1
-        print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
-        print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
+        # print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
+        # print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
         perdida = criterion(torch.tensor(s_original),torch.tensor(s_pred))
-        print("<<Perdida: "+str(perdida.item()))
+        # print("<<Perdida: "+str(perdida.item()))
         writer.add_scalar('Perdida', perdida, ventana)
         if (perdida.item() <= tolerancia):
             print(f"---epoca final: {epoca+1}--")
@@ -281,13 +281,13 @@ def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
         for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
             
             # print("INICIO DE EPOCA...")
-            print(">>Ventana Actual: " + str(ventana))
+            # print(">>Ventana Actual: " + str(ventana))
             # print("serie: " + str(serie))
             #entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
             entradas = serie[ventana-1:ventana+t_ent-1]
             
             salida = i[t_sal]
-            print("Entradass: " + str(entradas))
+            # print("Entradass: " + str(entradas))
             s_original.append(salida.item())
             #Core del algoritmo
             lm = LM(red,entradas,salida)
@@ -310,10 +310,10 @@ def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
         # for loss in perdidas_totales:
         #     writer.add_scalar('Perdida', loss, clave)
         #     clave = clave +1
-        print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
-        print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
+        # print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
+        # print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
         perdida = criterion(torch.tensor(s_original),torch.tensor(s_pred))
-        print("<<Perdida: "+str(perdida.item()))
+        # print("<<Perdida: "+str(perdida.item()))
         writer.add_scalar('Perdida', perdida, ventana)
         if (perdida.item() <= tolerancia):
             print(f"---epoca final: {epoca+1}--")

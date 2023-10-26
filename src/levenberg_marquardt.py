@@ -13,7 +13,7 @@ criterion = nn.MSELoss()
 #salida_esperada = torch.tensor([-0.0834])
 
 class LM:
-    def __init__(self, red, entrada, salida_esperada, lr=0.1, λ = 0.1, c1 = 2, c2 = 0.1):
+    def __init__(self, red, entrada, salida_esperada, lr=0.05, λ = 0.1, c1 = 2, c2 = 0.1):
         # print(" >> Entrada: " + str(entrada))
         self.red = red
         self.salida_esperada = salida_esperada
@@ -30,7 +30,7 @@ class LM:
         perdidas = {}
         
         #print("paramtros de LM al iniciar1: " + str([i for i in self.red.parameters()][0]))
-        print(">>Se calcula perdida inicial...")
+        # print(">>Se calcula perdida inicial...")
         f_i = self.calcula_perdida(self.aux_convierte_parametros())
         #print("paramtros de LM al iniciar2: " + str([i for i in self.red.parameters()][0]))
         for i in range(epocas):
@@ -62,7 +62,7 @@ class LM:
                 # print("Se registra la perdida: " + str(self.epoch) + " " + str(f_i1))
                 perdidas[self.epoch] = f_i1
                 #writer.flush()
-                print("Finaliza exec...")
+                # print("Finaliza exec...")
                 # print("paramtros red antes de salir del ejec " + str([i for i in self.red.parameters()][0]))
                 return perdidas
                 
