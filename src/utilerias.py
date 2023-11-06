@@ -66,12 +66,12 @@ def corrimiento_t_1(a, input_size):
     : input_size: es el tamaño de los sub-arreglos que queremos crear
     """
     subarreglos = []
-    print("aaaaaaa: " + str(a))
+    #print("aaaaaaa: " + str(a))
     for i in range(len(a)-input_size+1):
         subarreglo = torch.Tensor(a[i:i+input_size])
         
         subarreglos.append(subarreglo)
-        print("subarreglo:"+ str(subarreglo))#s[-1].shape[0]
+        #print("subarreglo:"+ str(subarreglo))#s[-1].shape[0]
         # if(subarreglos[-1].shape[0] != input_size):
         #     subarreglos = subarreglos[:-1]#elimina la ultima entrada en caso de que no tenga el taño correcto
     return subarreglos

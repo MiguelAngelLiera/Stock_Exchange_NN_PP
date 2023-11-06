@@ -1,0 +1,27 @@
+La tranformada de Fourier nos da caracterissticas de la frecuencia de una señal y su magnitud en general para
+series de tiepo que son estacionarias.
+Descompone una señal de manera que se obtiene una nueva señal con picos en los numeros de la frecuencia que tienen
+las señales que la componen, de manera que si mi señal original es la composicion de dos series sinoidales con frecuencia
+en los picos que tiene la transformada de fourier: https://www.youtube.com/watch?v=h4PTucW3Rm0
+Pero no nos dice cuando en el tiempo existen estas frecuncias, solo en un ambito global que frecuencias componen
+a la señal
+
+Con la STFT (short time fourier transform, tenemos una ventana de tiempo en donde se descompone la señal, en cada ventana)
+se asume que la señal es estacionaria.
+
+Desventajas:
+*en ninguno de los dos casos se toman caracteristicas locales ni globales de la serie de tiempo
+
+entre mas grande sea una ventana tendra una mejor resolución de frecuencia (se sabra con mayor presicion las frecuencias
+que componen la señal, pero no como estas se ven representadas en el tiempo, es decir, se va a ver mejor el pico de 
+la frecuencia de la serie mas representativa que compone a la señal original pero va a ser muy poco informativa en rela-
+ción a como va representando las subseries que compoenen la serie original en el tiempo)
+ pero pobre en relacion en como cambia esta 
+con el tiempo 
+
+A frecuencias altas tenemos una buena resolucion de tiempo pero una mala de frecuencia (es )
+
+entre mas grande este el wavelet o ventana, mejor sera la resolucion de frecuencias pero mala resolución de como estas
+cambian en el tiempo 
+
+A mayor
