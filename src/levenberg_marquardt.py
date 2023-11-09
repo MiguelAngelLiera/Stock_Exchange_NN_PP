@@ -6,6 +6,9 @@ import torch.nn.functional as F
 from NARNN import NARNN
 import copy
 
+from torch.utils.tensorboard import SummaryWriter
+writer = SummaryWriter('logs')
+
 tan_sigmoid = lambda a : F.tanh(F.sigmoid(a))
 criterion = nn.MSELoss()
 
@@ -13,7 +16,7 @@ criterion = nn.MSELoss()
 #salida_esperada = torch.tensor([-0.0834])
 
 class LM:
-    def __init__(self, red, entrada, salida_esperada, lr=0.05, λ = 0.1, c1 = 2, c2 = 0.1):
+    def __init__(self, red, entrada, salida_esperada, lr=0.05, λ = 0.1, c1 = 2, c2 = 0.1, epoch = 0):
         # print(" >> Entrada: " + str(entrada))
         self.red = red
         self.salida_esperada = salida_esperada
@@ -22,11 +25,12 @@ class LM:
         self.λ = λ
         self.c1 = c1
         self.c2 = c2
-        self.epoch = 0
+        self.epoch = epoch
         self.imprimir = False
+        self.result = {'grad':0,'hessian':0}
 
     def exec(self,epocas = 1):
-        self.epoch = 0
+        #self.epoch = 0
         perdidas = {}
         
         #print("paramtros de LM al iniciar1: " + str([i for i in self.red.parameters()][0]))
@@ -34,7 +38,7 @@ class LM:
         f_i = self.calcula_perdida(self.aux_convierte_parametros())
         #print("paramtros de LM al iniciar2: " + str([i for i in self.red.parameters()][0]))
         for i in range(epocas):
-            self.epoch = self.epoch+1
+            #self.epoch = self.epoch+1
             # print("epoca: " + str(self.epoch))
             self.red_ant = copy.deepcopy(self.red)
             self.step()
@@ -56,19 +60,19 @@ class LM:
                 self.rollback()
                 # print("paramtros self.red despues: " + str([i for i in self.red.parameters()][0]))
                 
-                return perdidas
+                return self.result
             if abs(f_i1.item()) < self.c1:
                 #print("paramtros de LM al finalizar: " + str([i for i in self.red.parameters()][0]))
                 # print("Se registra la perdida: " + str(self.epoch) + " " + str(f_i1))
-                perdidas[self.epoch] = f_i1
+                perdidas[1] = f_i1#self.epoch
                 #writer.flush()
                 # print("Finaliza exec...")
                 # print("paramtros red antes de salir del ejec " + str([i for i in self.red.parameters()][0]))
-                return perdidas
+                return self.result
                 
-            perdidas[self.epoch] = f_i
+            perdidas[1] = f_i#self.epoch
             f_i = f_i1
-        return perdidas
+        return self.result
             
     def rollback(self):
         """
@@ -110,7 +114,7 @@ class LM:
         if(self.imprimir):
             print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
             print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
-        #print("Salidas: " + str(salida) + ", " + str(self.salida_esperada))
+        # print("Salidas: " + str(salida) + ", " + str(self.salida_esperada))
         loss = criterion(salida,self.salida_esperada)#devuelve la perdida
         
         return loss
@@ -121,6 +125,8 @@ class LM:
         h = torch.autograd.functional.hessian(self.calcula_perdida, x_n) #calculamos la matriz hessiana
         #print("tamaño de h: " + str(h.shape))
         grad_f = torch.autograd.grad(self.calcula_perdida(x_n), x_n)[0] #calculamos el gradiente de la funcion
+        self.result['grad'] = grad_f
+        self.result['hessian'] = h
         grad_f = torch.transpose(torch.unsqueeze(grad_f, 0),0, 1) # calculamos la transpuesta del gradiente
         #print("tamaño de grad " + str(grad_f.shape))
         #λ*torch.eye(211): multiplica un escalar por la matriz identidad
