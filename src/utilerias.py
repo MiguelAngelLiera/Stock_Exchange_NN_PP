@@ -15,11 +15,18 @@ def normalizar(arr):
     """
     return np.vectorize(lambda x: (x-np.min(arr))/(np.max(arr)-np.min(arr)))(arr)
 
-def desnormalizar(arr):
+# def desnormalizar(arr):
+#     """
+#     Elimina la normalización cada uno de los elementos de un arreglo.
+#     """
+#     return np.vectorize(lambda y: np.min(arr)*(-y) + np.min(arr) + np.max(arr)*y)(arr)
+
+def desnormalizar(arr_normalizado, max_original, min_original):
     """
-    Elimina la normalización cada uno de los elementos de un arreglo.
-    """
-    return np.vectorize(lambda y: np.min(arr)*(-y) + np.min(arr) + np.max(arr)*y)(arr)
+    Desnormaliza un arreglo de Python que se normalizó utilizando la fórmula
+    def normalizar(arr):
+        """
+    return arr_normalizado * (max_original - min_original) + min_original
 
 #Se descompone cada uno de los conjuntos de coeficientes en conjuntos de entrenamiento, prueba y validación
 def generar_conjuntos(coeficientes,c_validacion,nivel_descomposicion):
@@ -168,6 +175,19 @@ def clear_tensorboard_database():
     print(f"db_path: {db_path}")
     if os.path.exists(db_path):
         os.remove(db_path)
+
+def take(rec, take=0):
+    """
+    Permite recortar lso datos a solo los :take: centrales
+    """
+    rec_len = len(rec)
+    if take > 0 and take < rec_len:
+        left_bound = right_bound = (rec_len-take) // 2
+        if (rec_len-take) % 2:
+            # right_bound must never be zero for indexing to work
+            right_bound = right_bound + 1
+
+        return rec[left_bound:-right_bound] 
 
 # def entrena(red,n_red,inputs,t_ent = 8,t_sal = -1):
 #     """
