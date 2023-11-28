@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.optim as optim
 from levenberg_marquardt import LM
 import os
+from NARNN import NARNN
+from keras.models import Sequential
 # from torch.utils.tensorboard import SummaryWriter
 
 # criterion = nn.MSELoss()
@@ -120,16 +122,22 @@ def genera_prediccion_1(c_pruebas,red,t_ent):
 def genera_prediccion_predictiva(datos_iniciales,t_ent,t_datos,red):
     """
     Genera prediccion cada n días, usando los datos que predice
+    :t_datos: tamaño del conjunto de datos
     """
     #serie = torch.tensor(c_pruebas[0][:, :t_ent][0].clone().detach())#obtiene los primeros 8 datos del conjunto de prueba
     serie = datos_iniciales
     ventana = 1
     for _ in range(t_datos):
-        predicted_output = red(serie[ventana-1:ventana-1+t_ent].clone().detach())
-        
-        #print("Salida predecida:" + str(predicted_output))
-        serie = torch.cat((serie, predicted_output))#concatena la salida predicha con los datos predichos anteriores
+        if isinstance(red, NARNN):
+            predicted_output = red(serie[ventana-1:ventana-1+t_ent].clone().detach())
+            
+            #print("Salida predecida:" + str(predicted_output))
+            serie = torch.cat((serie, predicted_output))#concatena la salida predicha con los datos predichos anteriores
         #print("serie: " + str(serie))
+        if isinstance(red, Sequential):
+            predicted_output = red.predict(np.array(serie[ventana-1:ventana-1+t_ent]).reshape(1, *red.layers[0].input_shape[1:]))
+            serie = np.concatenate((serie, predicted_output.reshape(1))) 
+            # print(f"serie: {serie}")
         ventana = ventana + 1
     return serie
 
