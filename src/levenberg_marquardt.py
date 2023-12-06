@@ -16,7 +16,7 @@ criterion = nn.MSELoss()
 #salida_esperada = torch.tensor([-0.0834])
 
 class LM:
-    def __init__(self, red, entrada, salida_esperada, lr=0.1, λ = 0.1, c1 = 2, c2 = 0.1, epoch = 0):
+    def __init__(self, red, entrada, salida_esperada, lr, λ, c1 = 2, c2 = 0.1, epoch = 0):
         # print(" >> Entrada: " + str(entrada))
         self.red = red
         self.salida_esperada = salida_esperada
@@ -29,22 +29,24 @@ class LM:
         self.imprimir = False
         self.result = {'grad':0,'hessian':0}
 
-    def exec(self,epocas = 1):
+    def exec(self,sub_epocas = 1):
         #self.epoch = 0
+        print(f"subepocas: {sub_epocas}")
         perdidas = {}
         
         #print("paramtros de LM al iniciar1: " + str([i for i in self.red.parameters()][0]))
         # print(">>Se calcula perdida inicial...")
         f_i = self.calcula_perdida(self.aux_convierte_parametros())
         #print("paramtros de LM al iniciar2: " + str([i for i in self.red.parameters()][0]))
-        for i in range(epocas):
+        for i in range(sub_epocas):
             #self.epoch = self.epoch+1
-            # print("epoca: " + str(self.epoch))
+            print("sub_epoca: " + str(i))
             self.red_ant = copy.deepcopy(self.red)
             self.step()
             self.imprimir = True
-            # print(">>Se calcula perdida despues del paso...")
+            print(">>Se calcula perdida despues del paso...")
             f_i1 = self.calcula_perdida(self.aux_convierte_parametros())
+            self.imprimir = False
             self.λ = 0.5*self.λ if f_i1 < f_i else 2*self.λ #se actualiza la variable lamba segun el rendimiento de la actualizacion
             # print("Error Anterior: " + str(f_i.item()))
             # print("Error nuevo: " + str(f_i1.item()))
@@ -61,14 +63,14 @@ class LM:
                 # print("paramtros self.red despues: " + str([i for i in self.red.parameters()][0]))
                 
                 return self.result
-            if abs(f_i1.item()) < self.c1:
-                #print("paramtros de LM al finalizar: " + str([i for i in self.red.parameters()][0]))
-                # print("Se registra la perdida: " + str(self.epoch) + " " + str(f_i1))
-                perdidas[1] = f_i1#self.epoch
-                #writer.flush()
-                # print("Finaliza exec...")
-                # print("paramtros red antes de salir del ejec " + str([i for i in self.red.parameters()][0]))
-                return self.result
+            # if abs(f_i1.item()) < self.c1:
+            #     #print("paramtros de LM al finalizar: " + str([i for i in self.red.parameters()][0]))
+            #     # print("Se registra la perdida: " + str(self.epoch) + " " + str(f_i1))
+            #     perdidas[1] = f_i1#self.epoch
+            #     #writer.flush()
+            #     # print("Finaliza exec...")
+            #     # print("paramtros red antes de salir del ejec " + str([i for i in self.red.parameters()][0]))
+            #     return self.result
                 
             perdidas[1] = f_i#self.epoch
             f_i = f_i1

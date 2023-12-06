@@ -64,7 +64,7 @@ def entrena(red,n_red,inputs,epocas=1000,t_ent = 8,t_sal = -1):
             # optimizer.step()
             train_SGD(red,entradas,salida)
 
-def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
+def entrena_LM(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
     """
     Entrena una red con el método de Levenverg-Marquardt 
     a partir de un conjunto de entradas y una salida
@@ -89,7 +89,7 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
             #print("Salida: " + str(salida))
             s_original.append(salida.item())
 
-            lm = LM(red,entradas,salida)
+            lm = LM(red,entradas,salida,lr=lr,λ = λ)
             metricas = lm.exec()
             # print(perdidas)
             pred = red(entradas)
@@ -121,7 +121,7 @@ def entrena_LM(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
     print("---FIN DE ENTRENAMIENTO: entrena_LM_pred---")
 
 
-def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
+def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
     """
     Entrena una red con el método de Levenverg-Marquardt 
     a partir de un conjunto de entradas y una salida
@@ -130,11 +130,12 @@ def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
     print("---INICIO DE ENTRENAMIENTO: entrena_LM_pred---")
     #print("paramtros antes: " + str([i for i in red.parameters()][0]))
     perdidas_totales = []
-    s_original = []
-    s_pred = []
+    
     ventana_en_epoca = 1
     #epoca = 1
     for epoca in range(epocas): #1000 epocas
+        s_original = []
+        s_pred = []
         ventana = 1
         print(f"---Inicio de epoca: {epoca+1}--")
         # print(inputs[n_red][0])
@@ -143,22 +144,22 @@ def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
             
             # print("INICIO DE EPOCA...")
             # print(">>Ventana Actual: " + str(ventana))
-            # print("serie: " + str(serie))
+            
             #entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
             entradas = serie[ventana-1:ventana+t_ent-1]
-            
+            print(f">>Entradas: {entradas}")
             salida = i[t_sal].view(1)
-            #print("Salida: " + str(salida))
+            print(">>Salida: " + str(salida))
             s_original.append(salida.item())
             #Core del algoritmo
-            lm = LM(red,entradas,salida)
-            metricas = lm.exec()
+            lm = LM(red,entradas,salida,lr=lr,λ = λ)
+            metricas = lm.exec(sub_epocas = 1)
 
             pred = red(entradas)
             serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
             s_pred.append(pred.item())
             writer.add_scalar(f'Gradiente de {n_red}', metricas['grad'].norm(), ventana_en_epoca)
-            writer.add_scalar(f'Gradiente de {n_red}', metricas['hessian'].norm(), ventana_en_epoca)
+            writer.add_scalar(f'Matriz Hessiana de {n_red}', metricas['hessian'].norm(), ventana_en_epoca)
             #print(perdidas)
             #print("paramtros red despues: " + str([i for i in red.parameters()][0]))
             
@@ -177,11 +178,13 @@ def entrena_LM_pred(red,n_red,inputs,epocas=1,t_ent = 8,t_sal = -1):
         # print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
         # print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
         perdida = criterion(torch.tensor(s_original),torch.tensor(s_pred))
+        print(">>s_original: " + str(s_original))
+        print(">>s_pred: " + str(s_pred))
         print("<<Perdida: "+str(perdida.item()) + f" epoca: {epoca+1}")
         writer.add_scalar(f'Pérdida de entrenamiento de {n_red}', perdida, epoca+1)
-        if (perdida.item() <= tolerancia):
-            print(f"---epoca final: {epoca+1}--")
-            break
+        # if (perdida.item() <= tolerancia):
+        #     print(f"---epoca final: {epoca+1}--")
+        #     break
         #epoca = epoca + 1
     #writer.add_figure(f'Pérdida de entrenamiento de {n_red}', plt.gcf())
     writer.close()
