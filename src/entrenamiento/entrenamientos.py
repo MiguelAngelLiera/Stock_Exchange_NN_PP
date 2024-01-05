@@ -4,6 +4,9 @@ import matplotlib.pyplot as plt
 import torch.optim as optim
 from levenberg_marquardt import LM
 from torch.utils.tensorboard import SummaryWriter
+import io
+import PIL.Image
+from torchvision.transforms import ToTensor
 
 def error(modelo,input_data,target):
     return modelo(input_data)-target
@@ -82,7 +85,9 @@ def entrena_LM(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
         
         for entrada in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
             # print(">>Ventana Actual: " + str(ventana))
-            #entradas = entrada[:, :t_ent][0]#se parten los primeros 8 días y se obtiene el noveno
+            #entradas = entrada[:, :t_ent][0]
+            
+            #se parten los primeros 8 días y se obtiene el noveno
             entradas = entrada[:t_ent]
             #salida = entrada[:, t_sal]
             salida = entrada[t_sal].view(1)
@@ -112,13 +117,15 @@ def entrena_LM(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
         # print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
         perdida = criterion(torch.tensor(s_original),torch.tensor(s_pred))
         #print("<<Perdida: "+str(perdida.item()) + f" epoca: {epoca+1}")
-        writer.add_scalar(f'Pérdida de entrenamiento de {n_red}', perdida, epoca+1)
+        writer.add_scalar(f'Pérdida de entrenamiento de la red: {n_red}', perdida, epoca+1)
+
+        pinta_pesos(red,epoca)
+
         if (perdida.item() <= tolerancia):
-            print(f"---epoca final: {epoca+1}--")
+            print(f"--Se supera la tolerancia. Epoca final: {epoca+1}--")
             break
     #writer.add_figure(f'Pérdida de entrenamiento de {n_red}', plt.gcf())
-    writer.close()
-    print("---FIN DE ENTRENAMIENTO: entrena_LM_pred---")
+    print("---FIN DE ENTRENAMIENTO: entrena_LM---")
 
 
 def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
@@ -129,18 +136,16 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
     """
     print("---INICIO DE ENTRENAMIENTO: entrena_LM_pred---")
     #print("paramtros antes: " + str([i for i in red.parameters()][0]))
-    perdidas_totales = []
     
     ventana_en_epoca = 1
-    #epoca = 1
-    for epoca in range(epocas): #1000 epocas
-        s_original = []
-        s_pred = []
+    for epoca in range(epocas): #numero de apocas que se requiere que la red entrene
+        s_original = [] #serie original
+        s_pred = [] #serie a partir de predicciones
         ventana = 1
         print(f"---Inicio de epoca: {epoca+1}--")
         # print(inputs[n_red][0])
-        serie = inputs[n_red][0][:t_ent]#primeros 8 elementos de la red
-        for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(son 12 iteraciones)
+        serie = inputs[n_red][0][:t_ent]#primeros 8 elementos de la red (inputs[numero de la red][primer batch][primeros t_ent elementos])
+        for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(por cada uno son 12 iteraciones)
             
             # print("INICIO DE EPOCA...")
             # print(">>Ventana Actual: " + str(ventana))
@@ -151,11 +156,11 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
             salida = i[t_sal].view(1)
             print(">>Salida: " + str(salida))
             s_original.append(salida.item())
-            #Core del algoritmo
-            lm = LM(red,entradas,salida,lr=lr,λ = λ)
+            #Core/Nucleo del algoritmo
+            lm = LM(red,entradas,salida,lr=lr,λ = λ) #se modifica cada parametro de la red segun el batch que se le de (Entrada y salida predecida contra salida esperada)
             metricas = lm.exec(sub_epocas = 1)
 
-            pred = red(entradas)
+            pred = red(entradas) #prediccion despues de haber modificado los pesos
             serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
             s_pred.append(pred.item())
             writer.add_scalar(f'Gradiente de {n_red}', metricas['grad'].norm(), ventana_en_epoca)
@@ -181,25 +186,46 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
         print(">>s_original: " + str(s_original))
         print(">>s_pred: " + str(s_pred))
         print("<<Perdida: "+str(perdida.item()) + f" epoca: {epoca+1}")
-        writer.add_scalar(f'Pérdida de entrenamiento de la red {n_red}', perdida, epoca+1)
-        #imagen_pesos = np.concatenate([parametro.detach().cpu().numpy() for parametro in red.parameters()], axis=None)
+        writer.add_scalar(f'Pérdida de entrenamiento predictivo de la red: {n_red}', perdida, epoca+1)
+        #writer.add_histogram(f'Serie de tiempo predicha para la epoca: {epoca+1}',torch.tensor(s_pred),epoca+1)
 
-        for nombre, parametro in red.named_parameters():
-            s2 = 1 if parametro.dim() <= 1 else parametro.shape[1]
-            imagen_parametro = parametro.detach().cpu().numpy().reshape((1,parametro.shape[0],s2 ,1))
-            print(f"imagen_parametro: imagen_parametro.shape")
-            writer.add_image(f'Pesos de la capa: {nombre} de la red {red}' , imagen_parametro, epoca+1, dataformats='NHWC')
-   
-        # imagen_pesos = np.concatenate([parametro.detach().cpu().numpy().flatten() for parametro in red.parameters()])
-        # imagen_pesos = imagen_pesos.reshape((1, -1, 1, 1))  # Ajustar la forma para la función add_image
-        #writer.add_image(f'Pesos/Imagen_Colores de la red {red}', imagen_pesos, epoca+1, dataformats='HW')
+        
+        
+        pinta_pesos(red,epoca)
 
-        # Registrar la imagen en TensorBoard
-        # writer.add_image(f'Pesos/Imagen_Colores de la red {red}' , imagen_pesos, epoca+1, dataformats='NHWC')
-        # if (perdida.item() <= tolerancia):
-        #     print(f"---epoca final: {epoca+1}--")
-        #     break
+        plot_buf = gen_plot(s_original,s_pred,perdida.item())
+        # for i, valor in enumerate(s_pred):
+        #     writer.add_scalar(f'Serie de tiempo predicha para la epoca: {epoca+1}', valor, epoca+1)
+
+        image = PIL.Image.open(plot_buf)
+        image = ToTensor()(image).unsqueeze(0)
+        writer.add_image(f'Comportamiento de la serie de tiempo para la red: {0} durante el entrenamiento predictivo', image, epoca+1,dataformats='NCHW')
+
+        if (perdida.item() <= tolerancia):
+            print(f"---epoca final: {epoca+1}--")
+            break
         #epoca = epoca + 1
     #writer.add_figure(f'Pérdida de entrenamiento de {n_red}', plt.gcf())
-    writer.close()
+   
     print("---FIN DE ENTRENAMIENTO: entrena_LM_pred---")
+
+def pinta_pesos(red, epoca):
+    for nombre, parametro in red.named_parameters():
+        s2 = 1 if parametro.dim() <= 1 else parametro.shape[1]
+        imagen_parametro = parametro.detach().cpu().numpy().reshape((1,parametro.shape[0],s2 ,1))
+        print(f"imagen_parametro: imagen_parametro.shape")
+        writer.add_image(f'Pesos de la capa: {nombre} de la red {red}' , imagen_parametro, epoca+1, dataformats='NHWC')
+
+def cerrar_escritor():
+    writer.close()
+
+def gen_plot(s_original,s_pred,perdida):
+    """Create a pyplot plot and save to buffer."""
+    plt.figure(figsize=(6, 4))
+    plt.plot(s_original)
+    plt.plot(s_pred,  label = f"Perdida: {float(perdida)}", color='#DA0C81')
+    plt.title('Serie original contra Predicha')
+    buf = io.BytesIO()
+    plt.savefig(buf, format='jpeg')
+    buf.seek(0)
+    return buf 

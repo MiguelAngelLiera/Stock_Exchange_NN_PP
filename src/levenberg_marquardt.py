@@ -47,7 +47,8 @@ class LM:
             print(">>Se calcula perdida despues del paso...")
             f_i1 = self.calcula_perdida(self.aux_convierte_parametros())
             self.imprimir = False
-            self.λ = 0.5*self.λ if f_i1 < f_i else 2*self.λ #se actualiza la variable lamba segun el rendimiento de la actualizacion
+            self.λ = 0.5*self.λ if f_i1 < f_i else 2*self.λ #se actualiza la variable lamdba segun el rendimiento de la actualizacion
+            print(f"Lambda: {self.λ}")
             # print("Error Anterior: " + str(f_i.item()))
             # print("Error nuevo: " + str(f_i1.item()))
             
@@ -86,6 +87,7 @@ class LM:
             
 
     def calcula_perdida(self,*parametros):
+        salidas_obtenidas = []
         # params = []
         # n_params = []
         # i=0
@@ -106,18 +108,22 @@ class LM:
         #Recrea el funcionamiento de la red
 
         #print("parametrosi: " + str(entrada))
+        for entrada,salida_esperada in zip(self.entrada,self.salida_esperada):
+
+            l1 = tan_sigmoid(F.linear(entrada,n_params[0],n_params[1]))
+            l2 = F.logsigmoid(F.linear(l1,n_params[2],n_params[3]))
+            salida = F.linear(l2,n_params[4],n_params[5])
+            #print("Pesos funcion: "+ str(n_params))
+            #print("Pesos red: " + str([i for i in self.red.parameters()]))
+            #print("----->SALIDA OBTENIDA: " + str(salida))
+            if(self.imprimir):
+                print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(entrada)))
+                print("----->SALIDA ESPERADA: " + str(salida_esperada))
+            # print("Salidas: " + str(salida) + ", " + str(self.salida_esperada))
+            salidas_obtenidas.append(salida)
+            
         
-        l1 = tan_sigmoid(F.linear(self.entrada,n_params[0],n_params[1]))
-        l2 = F.logsigmoid(F.linear(l1,n_params[2],n_params[3]))
-        salida = F.linear(l2,n_params[4],n_params[5])
-        #print("Pesos funcion: "+ str(n_params))
-        #print("Pesos red: " + str([i for i in self.red.parameters()]))
-        #print("----->SALIDA OBTENIDA: " + str(salida))
-        if(self.imprimir):
-            print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(self.entrada)))
-            print("----->SALIDA ESPERADA: " + str(self.salida_esperada))
-        # print("Salidas: " + str(salida) + ", " + str(self.salida_esperada))
-        loss = criterion(salida,self.salida_esperada)#devuelve la perdida
+        loss = criterion(salidas_obtenidas,self.salida_esperada)#devuelve la perdida
         
         return loss
     
