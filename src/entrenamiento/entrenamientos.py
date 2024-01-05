@@ -181,7 +181,21 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
         print(">>s_original: " + str(s_original))
         print(">>s_pred: " + str(s_pred))
         print("<<Perdida: "+str(perdida.item()) + f" epoca: {epoca+1}")
-        writer.add_scalar(f'Pérdida de entrenamiento de {n_red}', perdida, epoca+1)
+        writer.add_scalar(f'Pérdida de entrenamiento de la red {n_red}', perdida, epoca+1)
+        #imagen_pesos = np.concatenate([parametro.detach().cpu().numpy() for parametro in red.parameters()], axis=None)
+
+        for nombre, parametro in red.named_parameters():
+            s2 = 1 if parametro.dim() <= 1 else parametro.shape[1]
+            imagen_parametro = parametro.detach().cpu().numpy().reshape((1,parametro.shape[0],s2 ,1))
+            print(f"imagen_parametro: imagen_parametro.shape")
+            writer.add_image(f'Pesos de la capa: {nombre} de la red {red}' , imagen_parametro, epoca+1, dataformats='NHWC')
+   
+        # imagen_pesos = np.concatenate([parametro.detach().cpu().numpy().flatten() for parametro in red.parameters()])
+        # imagen_pesos = imagen_pesos.reshape((1, -1, 1, 1))  # Ajustar la forma para la función add_image
+        #writer.add_image(f'Pesos/Imagen_Colores de la red {red}', imagen_pesos, epoca+1, dataformats='HW')
+
+        # Registrar la imagen en TensorBoard
+        # writer.add_image(f'Pesos/Imagen_Colores de la red {red}' , imagen_pesos, epoca+1, dataformats='NHWC')
         # if (perdida.item() <= tolerancia):
         #     print(f"---epoca final: {epoca+1}--")
         #     break

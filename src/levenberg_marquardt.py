@@ -7,7 +7,7 @@ from NARNN import NARNN
 import copy
 
 from torch.utils.tensorboard import SummaryWriter
-writer = SummaryWriter('logs')
+# writer = SummaryWriter('logs')
 
 tan_sigmoid = lambda a : F.tanh(F.sigmoid(a))
 criterion = nn.MSELoss()
