@@ -87,7 +87,7 @@ class LM:
             
 
     def calcula_perdida(self,*parametros):
-        salidas_obtenidas = []
+        salidas_obtenidas = torch.tensor([])
         # params = []
         # n_params = []
         # i=0
@@ -109,7 +109,8 @@ class LM:
 
         #print("parametrosi: " + str(entrada))
         for entrada,salida_esperada in zip(self.entrada,self.salida_esperada):
-
+            print(f"entrada: {entrada}")
+            print(f"salida: {salida_esperada}")
             l1 = tan_sigmoid(F.linear(entrada,n_params[0],n_params[1]))
             l2 = F.logsigmoid(F.linear(l1,n_params[2],n_params[3]))
             salida = F.linear(l2,n_params[4],n_params[5])
@@ -120,10 +121,9 @@ class LM:
                 print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(entrada)))
                 print("----->SALIDA ESPERADA: " + str(salida_esperada))
             # print("Salidas: " + str(salida) + ", " + str(self.salida_esperada))
-            salidas_obtenidas.append(salida)
-            
-        
-        loss = criterion(salidas_obtenidas,self.salida_esperada)#devuelve la perdida
+            salidas_obtenidas = torch.cat([salidas_obtenidas,salida])
+        # Convertir la lista de tensores a un solo tensor
+        loss = criterion(salidas_obtenidas,torch.cat(self.salida_esperada))#devuelve la perdida
         
         return loss
     

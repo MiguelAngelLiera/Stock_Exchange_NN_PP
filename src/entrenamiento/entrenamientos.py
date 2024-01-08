@@ -128,7 +128,7 @@ def entrena_LM(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
     print("---FIN DE ENTRENAMIENTO: entrena_LM---")
 
 
-def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
+def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,t_ent = 8,t_sal = -1):
     """
     Entrena una red con el método de Levenverg-Marquardt 
     a partir de un conjunto de entradas y una salida
@@ -143,26 +143,43 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
         s_pred = [] #serie a partir de predicciones
         ventana = 1
         print(f"---Inicio de epoca: {epoca+1}--")
-        # print(inputs[n_red][0])
+        #se trata de la serie aue va prediciendo la red conforme se modifican los parametros de esta
         serie = inputs[n_red][0][:t_ent]#primeros 8 elementos de la red (inputs[numero de la red][primer batch][primeros t_ent elementos])
-        for i in inputs[n_red]:#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(por cada uno son 12 iteraciones)
+        for i in range(0,len(inputs[n_red]),batch_size):#por cada uno de los elementos del primer c. entrenamiento (el primero de los 6)(por cada uno son 12 iteraciones)
             
             # print("INICIO DE EPOCA...")
             # print(">>Ventana Actual: " + str(ventana))
-            
-            #entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
-            entradas = serie[ventana-1:ventana+t_ent-1]
-            print(f">>Entradas: {entradas}")
-            salida = i[t_sal].view(1)
-            print(">>Salida: " + str(salida))
-            s_original.append(salida.item())
+
+            lote = inputs[n_red][i:i+batch_size]
+            entradas_por_lote = []
+            salidas_por_lote = []
+            for ejemplar in lote:
+                #entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
+                entradas = serie[ventana-1:ventana+t_ent-1]
+                print(f">>Entradas: {entradas}")
+                #se agregan las entradas del ejemplar a las de todo el lote
+                entradas_por_lote.append(entradas)
+                salida = ejemplar[t_sal].view(1)
+                print(">>Salida: " + str(salida))
+                s_original.append(salida.item())
+                salidas_por_lote.append(salida)
+
+                pred = red(entradas) #prediccion despues de haber modificado los pesos
+                serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
+                s_pred.append(pred.item())
+
+                ventana = ventana + 1
             #Core/Nucleo del algoritmo
-            lm = LM(red,entradas,salida,lr=lr,λ = λ) #se modifica cada parametro de la red segun el batch que se le de (Entrada y salida predecida contra salida esperada)
+            print(f"entradas_por_lote: {entradas_por_lote}")
+            print(f"salidas_por_lote: {salidas_por_lote}")
+            lm = LM(red,entradas_por_lote,salidas_por_lote,lr=lr,λ = λ) #se modifica cada parametro de la red segun el batch que se le de (Entrada y salida predecida contra salida esperada)
             metricas = lm.exec(sub_epocas = 1)
 
-            pred = red(entradas) #prediccion despues de haber modificado los pesos
-            serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
-            s_pred.append(pred.item())
+            """for e in entradas_por_lote:
+                pred = red(e) #prediccion despues de haber modificado los pesos
+                serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
+                s_pred.append(pred.item())"""
+            
             writer.add_scalar(f'Gradiente de {n_red}', metricas['grad'].norm(), ventana_en_epoca)
             writer.add_scalar(f'Matriz Hessiana de {n_red}', metricas['hessian'].norm(), ventana_en_epoca)
             #print(perdidas)
@@ -171,12 +188,9 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
             # for clave, loss in perdidas.items():
             #     perdidas_totales.append(loss)
             ventana_en_epoca = ventana_en_epoca + 1
-            ventana = ventana + 1
+            
         #print("paramtros despues: " + str([i for i in red.parameters()][0]))
 
-        # for clave, loss in perdidas_totales.items():
-        #     print(f"Clave: {clave}, Valor: {loss}")
-        clave = 1
         # for loss in perdidas_totales:
         #     writer.add_scalar('Perdida', loss, clave)
         #     clave = clave +1
