@@ -200,7 +200,7 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,t_ent = 8,t_sal
         print(">>s_original: " + str(s_original))
         print(">>s_pred: " + str(s_pred))
         print("<<Perdida: "+str(perdida.item()) + f" epoca: {epoca+1}")
-        writer.add_scalar(f'Pérdida de entrenamiento predictivo de la red: {n_red}', perdida, epoca+1)
+        writer.add_scalar(f'Perdida de entrenamiento predictivo de la red: {n_red}', float(perdida.item()), epoca+1)
         #writer.add_histogram(f'Serie de tiempo predicha para la epoca: {epoca+1}',torch.tensor(s_pred),epoca+1)
 
         
