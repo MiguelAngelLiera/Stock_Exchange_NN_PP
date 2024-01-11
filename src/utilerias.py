@@ -1,8 +1,10 @@
+from matplotlib import pyplot as plt
 import torch, numpy as np
 import torch.nn as nn
 import torch.optim as optim
 from levenberg_marquardt import LM
 import os
+import io
 from NARNN import NARNN
 from keras.models import Sequential
 # from torch.utils.tensorboard import SummaryWriter
@@ -163,16 +165,16 @@ def genera_salida(vect,tam,red):
 
     return o
 
-def eliminar_archivos_registro():
+def eliminar_archivos_registro(carpeta):
     # Obtenemos la lista de archivos en la carpeta logs
-    files = os.listdir("logs")
+    files = os.listdir(carpeta)
     
     # Filtramos los archivos que tienen el sufijo "events"
     archivos_registro = [archivo for archivo in files if archivo.startswith("events")]
     
     # Eliminamos los archivos de registro
     for archivo in archivos_registro:
-        os.remove("logs/" + archivo)
+        os.remove(f"{carpeta}/" + archivo)
 
 def clear_tensorboard_database():
     # Obtiene la ruta del directorio de logs
@@ -196,6 +198,19 @@ def take(rec, take=0):
             right_bound = right_bound + 1
 
         return rec[left_bound:-right_bound] 
+    
+def gen_plot(s_original,s_pred,perdida):
+    """Create a pyplot plot and save to buffer."""
+    plt.figure(figsize=(6, 4))
+    plt.plot(s_original)
+    plt.plot(s_pred,  label = f"Perdida: {float(perdida)}", color='#DA0C81')
+    plt.title('Serie original contra Predicha')
+    
+    buf = io.BytesIO()
+    plt.savefig(buf, format='jpeg')
+    plt.close()
+    buf.seek(0)
+    return buf 
 
 # def entrena(red,n_red,inputs,t_ent = 8,t_sal = -1):
 #     """

@@ -6,13 +6,14 @@ from levenberg_marquardt import LM
 from torch.utils.tensorboard import SummaryWriter
 import io
 import PIL.Image
+import utilerias as utls
 from torchvision.transforms import ToTensor
 
 def error(modelo,input_data,target):
     return modelo(input_data)-target
 
 criterion = nn.MSELoss()
-writer = SummaryWriter('logs')
+writer = SummaryWriter('logs/auto_regresivo')
 tolerancia = 0.001
 
 def train(red,input_data, target, modelo):
@@ -180,8 +181,8 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,t_ent = 8,t_sal
                 serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
                 s_pred.append(pred.item())"""
             
-            writer.add_scalar(f'Gradiente de {n_red}', metricas['grad'].norm(), ventana_en_epoca)
-            writer.add_scalar(f'Matriz Hessiana de {n_red}', metricas['hessian'].norm(), ventana_en_epoca)
+            # writer.add_scalar(f'Gradiente de {n_red}', metricas['grad'].norm(), ventana_en_epoca)
+            # writer.add_scalar(f'Matriz Hessiana de {n_red}', metricas['hessian'].norm(), ventana_en_epoca)
             #print(perdidas)
             #print("paramtros red despues: " + str([i for i in red.parameters()][0]))
             
@@ -207,7 +208,7 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,t_ent = 8,t_sal
         
         pinta_pesos(red,epoca)
 
-        plot_buf = gen_plot(s_original,s_pred,perdida.item())
+        plot_buf = utls.gen_plot(s_original,s_pred,perdida.item())
         # for i, valor in enumerate(s_pred):
         #     writer.add_scalar(f'Serie de tiempo predicha para la epoca: {epoca+1}', valor, epoca+1)
 
@@ -233,13 +234,13 @@ def pinta_pesos(red, epoca):
 def cerrar_escritor():
     writer.close()
 
-def gen_plot(s_original,s_pred,perdida):
-    """Create a pyplot plot and save to buffer."""
-    plt.figure(figsize=(6, 4))
-    plt.plot(s_original)
-    plt.plot(s_pred,  label = f"Perdida: {float(perdida)}", color='#DA0C81')
-    plt.title('Serie original contra Predicha')
-    buf = io.BytesIO()
-    plt.savefig(buf, format='jpeg')
-    buf.seek(0)
-    return buf 
+# def gen_plot(s_original,s_pred,perdida):
+#     """Create a pyplot plot and save to buffer."""
+#     plt.figure(figsize=(6, 4))
+#     plt.plot(s_original)
+#     plt.plot(s_pred,  label = f"Perdida: {float(perdida)}", color='#DA0C81')
+#     plt.title('Serie original contra Predicha')
+#     buf = io.BytesIO()
+#     plt.savefig(buf, format='jpeg')
+#     buf.seek(0)
+#     return buf 
