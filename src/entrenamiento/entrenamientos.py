@@ -129,7 +129,7 @@ def entrena_LM(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
     print("---FIN DE ENTRENAMIENTO: entrena_LM---")
 
 
-def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,t_ent = 8,t_sal = -1):
+def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,decay_factor=0.5,t_ent = 8,t_sal = -1):
     """
     Entrena una red con el método de Levenverg-Marquardt 
     a partir de un conjunto de entradas y una salida
@@ -137,7 +137,7 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,t_ent = 8,t_sal
     """
     print("---INICIO DE ENTRENAMIENTO: entrena_LM_pred---")
     #print("paramtros antes: " + str([i for i in red.parameters()][0]))
-    
+    lr_callback = CustomLearningRateScheduler(lr,decay_factor)
     ventana_en_epoca = 1
     for epoca in range(epocas): #numero de apocas que se requiere que la red entrene
         s_original = [] #serie original
@@ -181,6 +181,8 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,t_ent = 8,t_sal
                 serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
                 s_pred.append(pred.item())"""
             
+            lr = lr_callback.on_batch_begin(i+1, logs={'loss': 0, 'epoca': epoca+1})
+            
             # writer.add_scalar(f'Gradiente de {n_red}', metricas['grad'].norm(), ventana_en_epoca)
             # writer.add_scalar(f'Matriz Hessiana de {n_red}', metricas['hessian'].norm(), ventana_en_epoca)
             #print(perdidas)
@@ -220,6 +222,7 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,t_ent = 8,t_sal
             print(f"---epoca final: {epoca+1}--")
             break
         #epoca = epoca + 1
+        lr = lr_callback.reset()
     #writer.add_figure(f'Pérdida de entrenamiento de {n_red}', plt.gcf())
    
     print("---FIN DE ENTRENAMIENTO: entrena_LM_pred---")
@@ -244,3 +247,24 @@ def cerrar_escritor():
 #     plt.savefig(buf, format='jpeg')
 #     buf.seek(0)
 #     return buf 
+    
+class CustomLearningRateScheduler():
+    def __init__(self, initial_lr, decay_factor):
+        self.initial_lr = initial_lr
+        self.decay_factor = decay_factor
+        self.iteration = 0  # Contador de iteraciones
+
+    def on_batch_begin(self, batch, logs=None):
+        #lr = self.initial_lr * (self.decay_factor ** self.iteration)
+        lr = self.initial_lr / (1 + self.decay_factor * self.iteration)
+        print(f"lr: {lr}, batch: {batch}")
+        if (logs['epoca'] == 1):
+            writer.add_scalar("Learning Rate en cada batch: ",lr,batch)
+        #print(red.summary())
+        self.iteration += 1
+        return lr
+    
+    def reset(self):
+        self.iteration = 0
+        print("Se resetea")
+        return self.initial_lr
