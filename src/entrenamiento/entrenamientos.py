@@ -139,10 +139,12 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,decay_factor=0.
     #print("paramtros antes: " + str([i for i in red.parameters()][0]))
     lr_callback = CustomLearningRateScheduler(lr,decay_factor)
     ventana_en_epoca = 1
+    lote_designado = 1
     for epoca in range(epocas): #numero de apocas que se requiere que la red entrene
         s_original = [] #serie original
         s_pred = [] #serie a partir de predicciones
         ventana = 1
+        n_lote = 1
         print(f"---Inicio de epoca: {epoca+1}--")
         #se trata de la serie aue va prediciendo la red conforme se modifican los parametros de esta
         serie = inputs[n_red][0][:t_ent]#primeros 8 elementos de la red (inputs[numero de la red][primer batch][primeros t_ent elementos])
@@ -152,36 +154,48 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,decay_factor=0.
             # print(">>Ventana Actual: " + str(ventana))
 
             lote = inputs[n_red][i:i+batch_size]
+            
             entradas_por_lote = []
             salidas_por_lote = []
             for ejemplar in lote:
                 #entradas = i[:, :t_ent]#se parten los primeros 8 días y se obtiene el noveno
                 entradas = serie[ventana-1:ventana+t_ent-1]
-                print(f">>Entradas: {entradas}")
+                #print(f">>Entradas: {entradas}")
                 #se agregan las entradas del ejemplar a las de todo el lote
                 entradas_por_lote.append(entradas)
                 salida = ejemplar[t_sal].view(1)
                 print(">>Salida: " + str(salida))
                 s_original.append(salida.item())
                 salidas_por_lote.append(salida)
-
+                
                 pred = red(entradas) #prediccion despues de haber modificado los pesos
+                print(f"prediccion pre entreno: {pred}")
                 serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
                 s_pred.append(pred.item())
 
                 ventana = ventana + 1
             #Core/Nucleo del algoritmo
-            print(f"entradas_por_lote: {entradas_por_lote}")
-            print(f"salidas_por_lote: {salidas_por_lote}")
+            # print(f"entradas_por_lote: {entradas_por_lote}")
+            # print(f"salidas_por_lote: {salidas_por_lote}")
+                
+            # Vamos a evaluar el comportamiento del lr hasta ahora
+            print(f"A comparar perdida actual: {torch.tensor(s_original[len(s_original)-t_ent:])} ,  {torch.tensor(s_pred[len(s_pred)-t_ent:])}")
+            perdida_actual = criterion(torch.tensor(s_original[len(s_original)-t_ent:]),torch.tensor(s_pred[len(s_pred)-t_ent:]))
+            print(f"Perdida actual: {perdida_actual}")
+            if(criterion(torch.tensor(s_original[len(s_original)-t_ent:]),torch.tensor(s_pred[len(s_pred)-t_ent:])) <= 0.005 and lote_designado == n_lote):
+                print(f">>nuevo factor: {lr_callback.decay_factor*0.8}")
+                lr_callback.decay_factor = lr_callback.decay_factor*0.8
+                lote_designado = lote_designado + 1
             lm = LM(red,entradas_por_lote,salidas_por_lote,lr=lr,λ = λ) #se modifica cada parametro de la red segun el batch que se le de (Entrada y salida predecida contra salida esperada)
             metricas = lm.exec(sub_epocas = 1)
-
+            if(batch_size == 1):
+                print(f"prediccion post entreno: {red(entradas)}")
             """for e in entradas_por_lote:
                 pred = red(e) #prediccion despues de haber modificado los pesos
                 serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
                 s_pred.append(pred.item())"""
             
-            lr = lr_callback.on_batch_begin(i+1, logs={'loss': 0, 'epoca': epoca+1})
+            lr = lr_callback.on_batch_begin(n_lote, logs={'loss': 0, 'epoca': epoca+1})
             
             # writer.add_scalar(f'Gradiente de {n_red}', metricas['grad'].norm(), ventana_en_epoca)
             # writer.add_scalar(f'Matriz Hessiana de {n_red}', metricas['hessian'].norm(), ventana_en_epoca)
@@ -191,6 +205,7 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,decay_factor=0.
             # for clave, loss in perdidas.items():
             #     perdidas_totales.append(loss)
             ventana_en_epoca = ventana_en_epoca + 1
+            n_lote = n_lote+1
             
         #print("paramtros despues: " + str([i for i in red.parameters()][0]))
 
@@ -200,8 +215,8 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,decay_factor=0.
         # print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
         # print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
         perdida = criterion(torch.tensor(s_original),torch.tensor(s_pred))
-        print(">>s_original: " + str(s_original))
-        print(">>s_pred: " + str(s_pred))
+        # print(">>s_original: " + str(s_original))
+        # print(">>s_pred: " + str(s_pred))
         print("<<Perdida: "+str(perdida.item()) + f" epoca: {epoca+1}")
         writer.add_scalar(f'Perdida de entrenamiento predictivo de la red: {n_red}', float(perdida.item()), epoca+1)
         #writer.add_histogram(f'Serie de tiempo predicha para la epoca: {epoca+1}',torch.tensor(s_pred),epoca+1)
