@@ -1,10 +1,8 @@
-import sys
-import os
+# import sys
+# import os
 #print(os.path.dirname(str(sys.path[0])))
-sys.path.append(os.path.dirname(str(sys.path[0])))
+# sys.path.append(os.path.dirname(str(sys.path[0])))
 #print(sys.path)
-
-
 from matplotlib import pyplot as plt
 import torch, numpy as np
 import torch.nn as nn
@@ -12,7 +10,7 @@ import torch.optim as optim
 #from levenberg_marquardt import LM
 import os
 import io
-from modelos.DWT_Auto_regresivo.NARNN import NARNN
+from ..modelos.DWT_Auto_regresivo.NARNN import NARNN
 from keras.models import Sequential
 # from torch.utils.tensorboard import SummaryWriter
 

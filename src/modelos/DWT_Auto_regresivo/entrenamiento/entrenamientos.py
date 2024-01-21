@@ -2,11 +2,11 @@ import torch, numpy as np
 import torch.nn as nn
 import matplotlib.pyplot as plt
 import torch.optim as optim
-from levenberg_marquardt import LM
+from .levenberg_marquardt import LM
 from torch.utils.tensorboard import SummaryWriter
 import io
 import PIL.Image
-import utilerias as utls
+from ....utilerias import utilerias as utls
 from torchvision.transforms import ToTensor
 
 def error(modelo,input_data,target):
