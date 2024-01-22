@@ -72,10 +72,19 @@ def entrena_LM(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
     """
     Entrena una red con el método de Levenverg-Marquardt 
     a partir de un conjunto de entradas y una salida
+
+    Args:
+        red: instancia de la red a entrenar
+        n_red:
+        inputs: entradas de la red
+        epocas: número de iteraciones del algoritmo
+        lr: taza de aprendizaje que se aplicara como ponderación de la actualización de los parametros de la red
+        λ: ponderación inicial de la matriz hessiana 
+        t_ent: tamaño de la entrada a la red neuronal
+        t_sal: tamaño de la salida de la red neuronal
     """
     print("---INICIO DE ENTRENAMIENTO: entrena_LM_pred---")
     # print("paramtros antes: " + str([i for i in red.parameters()][0]))
-    perdidas_totales = []
     s_original = []
     s_pred = []
     ventana_en_epoca = 1
@@ -108,11 +117,6 @@ def entrena_LM(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
             ventana_en_epoca = ventana_en_epoca + 1
             ventana = ventana + 1
         #print("paramtros final iteración: " + str([i for i in red.parameters()][0]))
-
-        clave = 1
-        # for loss in perdidas_totales:
-        #     writer.add_scalar('Perdida', loss, clave)
-        #     clave = clave +1
         #epoca = epoca + 1
         # print("s_original: " + str(s_original) + "tamaño: " + str(len(s_original)))
         # print("s_pred: " + str(s_pred) + "tamaño: " + str(len(s_pred)))
@@ -134,6 +138,18 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,decay_factor=0.
     Entrena una red con el método de Levenverg-Marquardt 
     a partir de un conjunto de entradas y una salida
     Va actualizando los parametros de entrenamiento con los datos que va prediciendo
+
+    Args:
+        red: instancia de la red a entrenar
+        n_red:
+        inputs: entradas de la red
+        epocas: número de iteraciones del algoritmo
+        lr: taza de aprendizaje que se aplicara como ponderación de la actualización de los parametros de la red
+        λ: ponderación inicial de la matriz hessiana 
+        batch_size: tamaño del batch para el entrenamiento
+        decay_factor: ponderación del decaimiento de la taza de aprendizaje
+        t_ent: tamaño de la entrada a la red neuronal
+        t_sal: tamaño de la salida de la red neuronal
     """
     print("---INICIO DE ENTRENAMIENTO: entrena_LM_pred---")
     #print("paramtros antes: " + str([i for i in red.parameters()][0]))
@@ -243,10 +259,17 @@ def entrena_LM_pred(red,n_red,inputs,epocas,lr,λ,batch_size = 1,decay_factor=0.
     print("---FIN DE ENTRENAMIENTO: entrena_LM_pred---")
 
 def pinta_pesos(red, epoca):
+    """
+    Se encarga de representar en forma de matriz en escala de grises los pesos y sesgos de cada una de las capas de una red.
+    
+    Args:
+        red: instancia de una red neuronal de la cual se pintaran los pesos.
+        epoca: número de iteración actual del entrenamiento de la cual se toman los pesos.
+    """
     for nombre, parametro in red.named_parameters():
         s2 = 1 if parametro.dim() <= 1 else parametro.shape[1]
         imagen_parametro = parametro.detach().cpu().numpy().reshape((1,parametro.shape[0],s2 ,1))
-        print(f"imagen_parametro: imagen_parametro.shape")
+        #print(f"imagen_parametro: {imagen_parametro.shape}")
         writer.add_image(f'Pesos de la capa: {nombre} de la red {red}' , imagen_parametro, epoca+1, dataformats='NHWC')
 
 def cerrar_escritor():

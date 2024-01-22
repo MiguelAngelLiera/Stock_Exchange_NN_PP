@@ -193,7 +193,7 @@ def clear_tensorboard_database():
 
 def take(rec, take=0):
     """
-    Permite recortar lso datos a solo los :take: centrales
+    Permite recortar los datos a solo los :take: centrales
     """
     rec_len = len(rec)
     if take > 0 and take < rec_len:
