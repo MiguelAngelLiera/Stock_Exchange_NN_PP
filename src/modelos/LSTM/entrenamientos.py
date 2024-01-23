@@ -30,8 +30,8 @@ def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t
         for i in range(0,len(y_entrenamiento)):#time_steps+1
             print(i)
             # Obtener las características y la etiqueta actual
-            ejemplar = ts_cierre_s_pred[i:i+time_steps,0]
-            print(ejemplar.reshape(1,time_steps,1))
+            ejemplar = ts_cierre_s_pred[i:i+time_steps,0].reshape(time_steps,1)
+            #print(ejemplar.reshape(1,time_steps,1))
 
             x_lote.append(ejemplar)
 
@@ -42,6 +42,7 @@ def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t
             # Agregar la predicción a las características para el siguiente paso
             # print(ts_cierre_s_pred)
             print(f"ejemplar: {ejemplar}")
+            print(f"ejemplar: {ejemplar.shape}")
             print(f"y: {np.array( y_entrenamiento[i])}")
             print(f"Predicción : { prediccion}")
             ts_cierre_s_pred = np.concatenate([ts_cierre_s_pred, prediccion])
@@ -74,13 +75,6 @@ def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t
                 
             n_ejemplar = n_ejemplar+1
             print(">>>>>>>>>>>>>>>Fin lote ")
-
-            # Entrenar el modelo con las nuevas características y la etiqueta real
-            # for sub_epoca in range(sub_epocas):
-            #     red.train_on_batch(x_actual, y_actual)
-            #     if(sub_epoca == sub_epocas - 1):
-            #         loss.append(red.train_on_batch(x_actual, y_actual))
-            
 
             
         #print(f"mean: {np.mean(np.array(loss))}")

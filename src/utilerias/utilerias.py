@@ -12,6 +12,7 @@ import os
 import io
 from ..modelos.DWT_Auto_regresivo.NARNN import NARNN
 from keras.models import Sequential
+from keras import Model
 # from torch.utils.tensorboard import SummaryWriter
 
 # criterion = nn.MSELoss()
@@ -143,6 +144,10 @@ def genera_prediccion_predictiva(datos_iniciales,t_ent,t_datos,red):
         #print("serie: " + str(serie))
         if isinstance(red, Sequential):
             predicted_output = red.predict(np.array(serie[ventana-1:ventana-1+t_ent]).reshape(1, *red.layers[0].input_shape[1:]))
+            serie = np.concatenate((serie, predicted_output.reshape(1))) 
+            # print(f"serie: {serie}")
+        if isinstance(red, Model):
+            predicted_output = red.predict(np.array(serie[ventana-1:ventana-1+t_ent]).reshape(1, 8, 1))
             serie = np.concatenate((serie, predicted_output.reshape(1))) 
             # print(f"serie: {serie}")
         ventana = ventana + 1
