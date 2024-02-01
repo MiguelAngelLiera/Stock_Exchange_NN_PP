@@ -1,0 +1,11 @@
+Deniz Kenan Kılıç, Ömür Uğur,
+Hybrid wavelet-neural network models for time series,
+Applied Soft Computing,
+Volume 144,
+2023,
+110469,
+ISSN 1568-4946,
+https://doi.org/10.1016/j.asoc.2023.110469.
+(https://www.sciencedirect.com/science/article/pii/S1568494623004878)
+Abstract: The use of wavelet analysis contributes to better modeling for financial time series in the sense of both frequency and time. In this study, S&P500 and NASDAQ data are separated into several components utilizing multiresolution analysis (MRA). Subsequently, using an appropriate neural network structure, each component is modeled. In addition, wavelets are used as an activation function in long short-term memory (LSTM) networks to form a hybrid model. The hybrid model is merged with MRA as a proposed method in this paper. Four distinct strategies are employed: LSTM, LSTM+MRA, hybrid LSTM-Wavenet, and hybrid LSTM-Wavenet+MRA. Results show that the use of MRA and wavelets as an activation function together reduces the error the most.
+Keywords: Nonlinear models; Long short-term memory (LSTM); Recurrent neural network (RNN); Time series analysis; Multiresolution analysis (MRA); Wavenet; Wavelet neural network (WNN)
