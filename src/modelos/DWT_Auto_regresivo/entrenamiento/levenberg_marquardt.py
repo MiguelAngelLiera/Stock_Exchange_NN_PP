@@ -3,17 +3,11 @@ import numpy as np
 from torch.nn import Module
 import torch.nn as nn
 import torch.nn.functional as F
-#from NARNN import NARNN
-import copy
-
-from torch.utils.tensorboard import SummaryWriter
-# writer = SummaryWriter('logs')
+import cached_property
 
 tan_sigmoid = lambda a : F.tanh(F.sigmoid(a))
 criterion = nn.MSELoss()
 
-#entrada = torch.Tensor([1,2,3,4,5,6,7,8])   
-#salida_esperada = torch.tensor([-0.0834])
 
 class LM:
     def __init__(self, red, entrada, salida_esperada, lr, λ, c1 = 2, c2 = 0.1, epoch = 0):
@@ -40,7 +34,6 @@ class LM:
         #print("paramtros de LM al iniciar2: " + str([i for i in self.red.parameters()][0]))
         for i in range(sub_epocas):
             #self.epoch = self.epoch+1
-            print("sub_epoca: " + str(i))
             self.red_ant = copy.deepcopy(self.red)
             self.step()
             self.imprimir = True
@@ -109,18 +102,17 @@ class LM:
 
         #print("parametrosi: " + str(entrada))
         for entrada,salida_esperada in zip(self.entrada,self.salida_esperada):
-            # print(f"entrada: {entrada}")
-            # print(f"salida: {salida_esperada}")
             l1 = tan_sigmoid(F.linear(entrada,n_params[0],n_params[1]))
             l2 = F.logsigmoid(F.linear(l1,n_params[2],n_params[3]))
             salida = F.linear(l2,n_params[4],n_params[5])
             #print("Pesos funcion: "+ str(n_params))
             #print("Pesos red: " + str([i for i in self.red.parameters()]))
             #print("----->SALIDA OBTENIDA: " + str(salida))
-            # if(self.imprimir):
-            #     print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(entrada)))
-            #     print("----->SALIDA ESPERADA: " + str(salida_esperada))
-            # print("Salidas: " + str(salida) + ", " + str(self.salida_esperada))
+            if(self.imprimir):
+                print(f"entrada: {entrada}")
+                print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(entrada)))
+                print("----->SALIDA ESPERADA: " + str(salida_esperada))
+            #print("Salidas: " + str(salida) + ", " + str(self.salida_esperada))
             salidas_obtenidas = torch.cat([salidas_obtenidas,salida])
         # Convertir la lista de tensores a un solo tensor
         loss = criterion(salidas_obtenidas,torch.cat(self.salida_esperada))#devuelve la perdida
