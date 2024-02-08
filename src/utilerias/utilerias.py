@@ -19,6 +19,46 @@ from keras import Model
 # writer = SummaryWriter('logs')
 # tolerancia = 0.001
 
+def rmse(y_true, y_pred):
+    """
+    Calcula el root mean square error (RMSE) de dos arreglos de numpy
+
+    Args:
+        y_true: el conjunto de datos original
+        y_pred: el conjunto de datos que se predice
+    """
+    return round(np.sqrt(np.mean((y_true - y_pred) ** 2)),4)
+
+def mape(y_true, y_pred):
+    """
+    Calcula el mean absolute percentage error (MAPE)
+
+    Args:
+        y_true: el conjunto de datos original
+        y_pred: el conjunto de datos que se predice
+    """
+    # Calcular el error porcentual absoluto para cada observación
+    errores_porcentuales = np.abs((y_true - y_pred) / y_true)
+    
+    # Calcular el MAPE promedio
+    mape = round(np.mean(errores_porcentuales) * 100,4)
+    
+    return mape
+
+def directional_symmetry(y_true, y_pred):
+    """
+    Calcula el directional_symmetry
+
+    Args:
+        y_true: el conjunto de datos original
+        y_pred: el conjunto de datos que se predice
+    """
+    N = len(y_true)
+    suma = 0
+    for i in range(N-1):
+        suma += 1 if ((y_true[i+1]-y_true[i])*(y_pred[i+1]-y_pred[i]) >= 0) else 0
+    return round(100/N*suma,4)
+
 def normalizar(arr):
     """
     Normaliza cada uno de los elementos de un arreglo.
@@ -79,12 +119,15 @@ def forma_entrada(a, input_size):
 def corrimiento_t_1(a, input_size):
     """
     Dado un arreglo, parte a este correspondiendo a la entrada de la red neuronal y a un elemento de prueba
-    (si la entrada de la red es de n, el tamaño del sub-arreglo es de tamaño n+1), hacidendo un corrimiento
+    (si la entrada de la red es de tamaño n, el tamaño del sub-arreglo es de tamaño n+1), hacidendo un corrimiento
     temporal de 1.
-    : input_size: es el tamaño de los sub-arreglos que queremos crear
+
+    Args:
+        a: arreglo de numpy con los todos los datos de entrada de la red
+        input_size: +1 es el tamaño de los sub-arreglos que se requiere crear
     """
     subarreglos = []
-    #print("aaaaaaa: " + str(a))
+    #toma todos los elementos desde el contenido en i=0 omitiendo los input_size+1 ultimos elementos
     for i in range(len(a)-input_size+1):
         subarreglo = torch.Tensor(a[i:i+input_size])
         
