@@ -58,7 +58,7 @@ class Entrenamiento:
             # Se comparan las perdidas entre la señal original y la que predijo el algoritmo
             perdida = self.criterion(torch.tensor(s_original),torch.tensor(s_pred)) 
 
-            print("<<Perdida: "+str(perdida.item()) + f" epoca: {epoca}>>")
+            # print("<<Perdida: "+str(perdida.item()) + f" epoca: {epoca}>>")
             self.writer.add_scalar(f'Perdida de entrenamiento predictivo de la red: {self.n_red}', float(perdida.item()), epoca)
             #writer.add_histogram(f'Serie de tiempo predicha para la epoca: {epoca}',torch.tensor(s_pred),epoca)
 
@@ -70,12 +70,12 @@ class Entrenamiento:
             self.writer.add_image(f'Comportamiento de la serie de tiempo para la red: {0} durante el entrenamiento predictivo', image, epoca+1,dataformats='NCHW')
 
             if (perdida.item() <= self.tolerancia):
-                print(f"---epoca final: {epoca+1}--")
+                print(f"-- Epoca final: {epoca+1} --")
                 break
             lr_callback.reset()
         #writer.add_figure(f'Pérdida de entrenamiento de {n_red}', plt.gcf())
     
-        print("---FIN DE ENTRENAMIENTO: entrena_LM_pred---")
+        print("---FIN DE ENTRENAMIENTO: entrena_LM---")
 
     def entrena_por_lote(self,lotes,t_ent,t_sal,e_predictivo,batch_size,lote_designado,epoca,lr,λ,lr_callback):
         s_original = [] # serie original
@@ -102,7 +102,7 @@ class Entrenamiento:
                 salidas_por_lote.append(salida)
                 
                 pred = self.red(entradas) #prediccion despues de haber modificado los pesos
-                print(f"Predicción pre entreno: {pred}")
+                print(f"-----> Predicción pre entreno: {pred} ")
                 serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
                 s_pred.append(pred.item())
 
@@ -121,15 +121,15 @@ class Entrenamiento:
 
                     if(perdida_actual <= 0.005 and lote_designado == n_lote):
                         lr_callback.decay_factor = lr_callback.decay_factor*0.8
-                        print(f">>nuevo factor: {lr_callback.decay_factor}")
+                        # print(f">>nuevo factor: {lr_callback.decay_factor}")
                         lote_designado = lote_designado + 1
 
                     # Core/Nucleo del algoritmo
                     lm = LM(self.red,entradas_por_lote,salidas_por_lote,lr=lr,λ = λ) #se modifica cada parametro de la red segun el batch que se le de (Entrada y salida predecida contra salida esperada)
                     lm.exec()
 
-                    if(batch_size == 1):
-                        print(f"prediccion post entreno: {self.red(entradas)}")
+                    # if(batch_size == 1):
+                    #     print(f"prediccion post entreno: {self.red(entradas)}")
                     
                     lr = lr_callback.on_batch_begin(n_lote, logs={'loss': 0, 'epoca': epoca})
                     

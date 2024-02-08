@@ -110,8 +110,8 @@ class LM:
             #print("----->SALIDA OBTENIDA: " + str(salida))
             if(self.imprimir):
                 print(f"entrada: {entrada}")
-                print("----->SALIDA DE LA RED OBTENIDA: " + str(self.red(entrada)))
-                print("----->SALIDA ESPERADA: " + str(salida_esperada))
+                print("----->Salida de la red: " + str(self.red(entrada)))
+                print("----->Salida esperada: " + str(salida_esperada))
             #print("Salidas: " + str(salida) + ", " + str(self.salida_esperada))
             salidas_obtenidas = torch.cat([salidas_obtenidas,salida])
         # Convertir la lista de tensores a un solo tensor
@@ -120,7 +120,7 @@ class LM:
         return loss
     
     def step(self):
-        print(">>Inicio de paso (Los valores de la perdida aqui contenidos solo son usados para calculos)")
+        print(">>Paso...<<")
 
         x_n = self.aux_convierte_parametros() #concatena los paremetros de la red en un solo vector unidimensional
         h = torch.autograd.functional.hessian(self.calcula_perdida, x_n) #calculamos la matriz hessiana
@@ -149,7 +149,7 @@ class LM:
         #print("--Post-Actualización:-- " + str(x_n))
         #print("transpuesta: " + str(torch.transpose(x_n,0,1)[0]))
         self.asigna_parametros(torch.transpose(x_n,0,1)[0],reasignar=True)
-        print(">>Fin de paso")
+        print(">>Fin de paso<<")
         
 
     def asigna_parametros(self,*parametros,reasignar=False):
