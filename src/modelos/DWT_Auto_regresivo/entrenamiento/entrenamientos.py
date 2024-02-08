@@ -205,7 +205,7 @@ class CustomLearningRateScheduler():
 #         epocas: número de iteraciones del algoritmo
 #         lr: taza de aprendizaje que se aplicara como ponderación de la actualización de los parametros de la red
 #         λ: ponderación inicial de la matriz hessiana 
-#         t_ent: tamaño de la entrada a la red neuronal
+#         t_ent: tamaño de la entrada a la red neuronal 
 #         t_sal: tamaño de la salida de la red neuronal
 #     """
 #     print("---INICIO DE ENTRENAMIENTO: entrena_LM_pred---")
