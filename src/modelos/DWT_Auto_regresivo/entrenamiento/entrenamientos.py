@@ -12,11 +12,9 @@ from torchvision.transforms import ToTensor
 def error(modelo,input_data,target):
     return modelo(input_data)-target
 
-writer = SummaryWriter('logs/auto_regresivo')
-
 class Entrenamiento:
 
-    def __init__(self,red,n_red=0) -> None:
+    def __init__(self,red,n_red=0,writer_dir='logs/DWT_NARNN') -> None:
         """
         Constructor de la clase
         Args:
@@ -25,7 +23,7 @@ class Entrenamiento:
         self.red = red
         self.n_red = n_red
         self.criterion = nn.MSELoss()
-        self.writer = writer
+        self.writer = SummaryWriter(writer_dir)
         self.tolerancia = 0.001
 
     def entrena_lm(self,inputs,epocas,lr,λ,batch_size = 1,decay_factor=0,t_ent = 8,t_sal = -1,e_predictivo = False):
@@ -160,17 +158,6 @@ class Entrenamiento:
         Se encarga de cerrar el objeto escritor de TensorBoard
         """
         self.writer.close()
-
-# def gen_plot(s_original,s_pred,perdida):
-#     """Create a pyplot plot and save to buffer."""
-#     plt.figure(figsize=(6, 4))
-#     plt.plot(s_original)
-#     plt.plot(s_pred,  label = f"Perdida: {float(perdida)}", color='#DA0C81')
-#     plt.title('Serie original contra Predicha')
-#     buf = io.BytesIO()
-#     plt.savefig(buf, format='jpeg')
-#     buf.seek(0)
-#     return buf 
     
 class CustomLearningRateScheduler():
     def __init__(self, initial_lr, decay_factor):
