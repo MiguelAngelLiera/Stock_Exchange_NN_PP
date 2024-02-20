@@ -253,11 +253,11 @@ def take(rec, take=0):
         return rec[left_bound:-right_bound] 
     
 def gen_plot(s_original,s_pred,perdida):
-    """Create a pyplot plot and save to buffer."""
+    """Crea un pyplot plot y lo salva al buffer."""
     plt.figure(figsize=(6, 4))
     plt.plot(s_original)
     plt.plot(s_pred,  label = f"Perdida: {float(perdida)}", color='#DA0C81')
-    plt.title('Serie original contra Predicha')
+    plt.title('Serie Original contra Predicha')
     
     buf = io.BytesIO()
     plt.savefig(buf, format='jpeg')

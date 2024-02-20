@@ -12,6 +12,9 @@ from torchvision.transforms import ToTensor
 def error(modelo,input_data,target):
     return modelo(input_data)-target
 
+s_entr_pred = 'durante el entrenamiento predictivo'
+s_vacia = ''
+
 class Entrenamiento:
 
     def __init__(self,red,n_red=0,writer_dir='logs/DWT_NARNN') -> None:
@@ -57,21 +60,23 @@ class Entrenamiento:
             perdida = self.criterion(torch.tensor(s_original),torch.tensor(s_pred)) 
 
             # print("<<Perdida: "+str(perdida.item()) + f" epoca: {epoca}>>")
-            self.writer.add_scalar(f'Perdida de entrenamiento predictivo de la red: {self.n_red}', float(perdida.item()), epoca)
+            self.writer.add_scalar(f'Perdida de entrenamiento predictivo de la red: {self.red.nombre} {s_entr_pred if e_predictivo else s_vacia}', float(perdida.item()), epoca)
             #writer.add_histogram(f'Serie de tiempo predicha para la epoca: {epoca}',torch.tensor(s_pred),epoca)
 
-            self.pinta_pesos(epoca)
+            self.pinta_pesos(epoca,e_predictivo)
+            self.pinta_histograma_de_pesos(epoca,e_predictivo)
             plot_buf = utls.gen_plot(s_original,s_pred,perdida.item())
 
             image = PIL.Image.open(plot_buf)
             image = ToTensor()(image).unsqueeze(0)
-            self.writer.add_image(f'Comportamiento de la serie de tiempo para la red: {0} durante el entrenamiento predictivo', image, epoca+1,dataformats='NCHW')
+            s_pred= 'predictivo'
+            self.writer.add_image(f'Comportamiento de la serie de tiempo para la red: {self.red.nombre} durante el entrenamiento {s_pred if e_predictivo else s_vacia}', image, epoca+1,dataformats='NCHW')
 
             if (perdida.item() <= self.tolerancia):
                 print(f"-- Epoca final: {epoca+1} --")
                 break
             lr_callback.reset()
-        #writer.add_figure(f'Pérdida de entrenamiento de {n_red}', plt.gcf())
+        #writer.add_figure(f'Pérdida de entrenamiento de {self.red.nombre}', plt.gcf())
     
         print("---FIN DE ENTRENAMIENTO: entrena_LM---")
 
@@ -139,19 +144,44 @@ class Entrenamiento:
                     entradas_por_lote, salidas_por_lote  = [], []
         return s_original, s_pred
 
-    def pinta_pesos(self,epoca):
+    def pinta_pesos(self,epoca,e_predictivo):
         """
         Se encarga de representar en forma de matriz en escala de grises los pesos y sesgos de cada una de las capas de una red.
         
         Args:
-            red: instancia de una red neuronal de la cual se pintaran los pesos.
             epoca: número de iteración actual del entrenamiento de la cual se toman los pesos.
         """
+        imagenes_pesos = []
+        altura_max = 0
+        for nombre, parametro in self.red.named_parameters():
+            altura_max = parametro.shape[0] if parametro.shape[0] > altura_max else altura_max
+
         for nombre, parametro in self.red.named_parameters():
             s2 = 1 if parametro.dim() <= 1 else parametro.shape[1]
-            imagen_parametro = parametro.detach().cpu().numpy().reshape((1,parametro.shape[0],s2 ,1))
-            #print(f"imagen_parametro: {imagen_parametro.shape}")
-            self.writer.add_image(f'Pesos de la capa: {nombre} de la red {self.n_red}' , imagen_parametro, epoca+1, dataformats='NHWC')
+            altura = parametro.shape[0]
+
+            imagen_parametro = parametro.detach().cpu().numpy().reshape((1,altura,s2 ,1))
+            longitud_pad = ((0, 0), (0, altura_max-altura if altura_max > altura else 0), (0, 0), (0, 0))
+            imagen_parametro = np.pad(imagen_parametro, longitud_pad, mode='constant',constant_values=1)
+            
+            imagenes_pesos.append(imagen_parametro)
+
+        imagen_concatenada = np.concatenate(imagenes_pesos, axis =2)
+        self.writer.add_image(f'Pesos de la red {self.red.nombre} {s_entr_pred if e_predictivo else s_vacia}', imagen_concatenada, epoca+1, dataformats='NHWC') #de la capa {nombre} 
+        
+
+    def pinta_histograma_de_pesos(self, epoca, e_predictivo):
+        """
+        Crea un histograma con todos los pesos de la red
+
+        Args:
+            epoca: número de iteración actual del entrenamiento de la cual se toman los pesos.
+        """
+        pesos = torch.tensor([])  # Inicializamos un tensor vacío
+        for param in self.red.parameters():
+            pesos = torch.cat((pesos, param.flatten()))  # Concatenamos los pesos de cada capa
+
+        self.writer.add_histogram(f'Pesos de la red: {self.red.nombre} {s_entr_pred if e_predictivo else s_vacia}', pesos, epoca+1)
 
     def cerrar_escritor(self):
         """

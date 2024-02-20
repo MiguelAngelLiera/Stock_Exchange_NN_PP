@@ -1,20 +1,24 @@
 from keras.callbacks import Callback
+from keras.callbacks import TensorBoard
 from keras import backend as K
+from tensorflow import summary
 import numpy as np
 from keras.optimizers import SGD
 from keras.losses import mean_squared_error
 from torch.utils.tensorboard import SummaryWriter
-writer = SummaryWriter('logs/lstm')
 import PIL.Image
 from ...utilerias import utilerias as utls
 from torchvision.transforms import ToTensor
+
+writer = SummaryWriter('logs/lstm')
+s_vacia = ""
 
 def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t_lote=1,optimizador=SGD):
 
     red.compile(optimizer=SGD(learning_rate=lr),loss='mean_squared_error')#SGD(learning_rate=1e-3)
 
     # Definir el callback con la función de la tasa de aprendizaje
-    lr_callback = CustomLearningRateScheduler(initial_lr=lr, decay_factor=0.5,red = red)#0.9
+    lr_callback = CalendarizadorTasaAprendizaje(initial_lr=lr, decay_factor=0.5,red = red)#0.9
     ts_cierre_s_pred = c_entrenamiento_n
 
     loss_m = []
@@ -94,9 +98,9 @@ def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t
 
     return loss_m
 
-class CustomLearningRateScheduler(Callback):
+class CalendarizadorTasaAprendizaje(Callback):
     def __init__(self, initial_lr, decay_factor, red):
-        super(CustomLearningRateScheduler, self).__init__()
+        super(CalendarizadorTasaAprendizaje, self).__init__()
         self.initial_lr = initial_lr
         self.decay_factor = decay_factor
         self.iteration = 0  # Contador de iteraciones
@@ -122,3 +126,34 @@ class CustomLearningRateScheduler(Callback):
         K.set_value(self.red.optimizer.lr, self.initial_lr)
         self.iteration = 0
         print("Se resetea")
+
+class CalendarizadorPredicciones(TensorBoard):
+    def __init__(self, log_dir, datos_validacion, y_original, e_predictivo= False):
+        super().__init__()
+        self.log_dir = log_dir
+        self.writer = summary.create_file_writer(log_dir)
+        self.datos_validacion = datos_validacion
+        self.e_predictivo = e_predictivo
+        self.y_original = y_original
+
+    def on_epoch_end(self, epoch, logs=None):
+        # Obtener las predicciones del modelo en el conjunto de validación
+        y_pred = self.model.predict(self.datos_validacion)  # Ajusta esto según tus datos de validación
+        y_pred = np.reshape(y_pred, (y_pred.shape[0]))
+        #y_original = np.array(self.datos_validacion)
+        # Log de las predicciones como un histograma en TensorBoard
+        with self.writer.as_default():
+            #for pred in y_pred:
+             #   summary.scalar(f'Prediccion de la red {self.model.name} en cada epoca', pred, step=epoch)
+            # np.reshape(self.y_original,(self.y_original.shape[0]))
+            plot_buf = utls.gen_plot(self.y_original,y_pred,0)
+
+            image = PIL.Image.open(plot_buf)
+            image = ToTensor()(image).unsqueeze(0)
+            image = image.permute(0, 2, 3, 1) #lo ordenamos en forma NHCW
+            s_pred= 'predictivo'
+            summary.image(f'Comportamiento de la serie de tiempo para la red: {self.model.name} durante el entrenamiento {s_pred if self.e_predictivo else s_vacia}', image, epoch+1)
+            for layer in self.model.layers:
+                for weight in layer.weights:
+                    summary.histogram(f"Peso: {weight.name} de la red: {self.model.name}", data=weight, step=epoch)
+        self.writer.flush()
