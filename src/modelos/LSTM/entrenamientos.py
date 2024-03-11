@@ -10,7 +10,7 @@ import PIL.Image
 from ...utilerias import utilerias as utls
 from torchvision.transforms import ToTensor
 
-writer = SummaryWriter('logs/lstm')
+writer = SummaryWriter('logs/DWT_LSTM')
 s_vacia = ""
 
 def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t_lote=1,optimizador=SGD):
