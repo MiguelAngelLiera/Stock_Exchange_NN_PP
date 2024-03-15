@@ -9,6 +9,7 @@ from torch.utils.tensorboard import SummaryWriter
 import PIL.Image
 from ...utilerias import utilerias as utls
 from torchvision.transforms import ToTensor
+import matplotlib.pyplot as plt
 
 writer = SummaryWriter('logs/DWT_LSTM')
 s_vacia = ""
@@ -157,3 +158,43 @@ class CalendarizadorPredicciones(TensorBoard):
                 for weight in layer.weights:
                     summary.histogram(f"Peso: {weight.name} de la red: {self.model.name}", data=weight, step=epoch)
         self.writer.flush()
+
+class CalendarizadorPesos(Callback):
+    def __init__(self, log_dir, e_predictivo= False):
+        super(CalendarizadorPesos, self).__init__()
+        self.log_dir = log_dir
+        self.writer = summary.create_file_writer(log_dir)
+
+    def on_epoch_end(self, epoch, logs=None):
+        imagen_total = np.array([])
+        # Obtener los pesos de la capa deseada
+        for capa in self.model.layers:
+            capa = 1
+            pesos_en_capa = capa.get_weights() # Pesos de la primera capa LSTM
+            componente = 1
+            for componente_de_peso in pesos_en_capa:
+                anchura = 1 if componente_de_peso.dim() <= 1 else componente_de_peso.shape[1]
+                altura = componente_de_peso.shape[0]
+                if anchura > altura:
+                    altura_t = altura
+                    altura = anchura
+                    anchura = altura_t
+                # Concatena la imagen de los pesos de la componente de la capa con una linea blanca divisora
+                imagen_parametro = np.concatenate((componente_de_peso.reshape((1,altura,anchura,1)), np.ones((1, 200, 1, 1))), axis=2)
+                if componente == 1:
+                    imagen_capa = imagen_parametro
+                else:
+                    imagen_capa = np.concatenate((imagen_capa, imagen_parametro), axis = 2)
+                componente = componente+1
+            
+            imagen_total = np.concatenate((imagen_capa, np.ones((1, 200, 2, 1))), axis=2)
+
+
+            # Visualizar los pesos
+            # plt.figure(figsize=(10, 5))
+            # plt.plot(layer_weights)
+            # plt.title(f'Pesos de la capa {self.layer_name} - Epoch {epoch+1}')
+            # plt.xlabel('Neurona')
+            # plt.ylabel('Peso')
+            # plt.grid(True)
+            # plt.show()
