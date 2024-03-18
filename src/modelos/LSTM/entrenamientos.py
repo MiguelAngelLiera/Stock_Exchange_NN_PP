@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 
 writer = SummaryWriter('logs/DWT_LSTM')
 s_vacia = ""
+s_entr_pred = 'durante el entrenamiento predictivo'
 
 def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t_lote=1,optimizador=SGD):
 
@@ -159,32 +160,36 @@ class CalendarizadorPredicciones(TensorBoard):
                     summary.histogram(f"Peso: {weight.name} de la red: {self.model.name}", data=weight, step=epoch)
         self.writer.flush()
 
-class CalendarizadorPesos(Callback):
+class CalendarizadorPesos(TensorBoard):
     def __init__(self, log_dir, e_predictivo= False):
         super(CalendarizadorPesos, self).__init__()
         self.log_dir = log_dir
         self.writer = summary.create_file_writer(log_dir)
+        self.e_predictivo = e_predictivo
 
-    def on_epoch_end(self, epoch, logs=None):
-        imagen_total = np.array([])
+    def on_epoch_end(self, epoca, logs=None):
+        imagen_total = np.empty((1, 200, 0, 1)) # se inicializa la imagen total de todos los componentes de cada capa
         # Obtener los pesos de la capa deseada
         for capa in self.model.layers:
-            capa = 1
-            pesos_en_capa = capa.get_weights() # Pesos de la primera capa LSTM
-            componente = 1
-            for componente_de_peso in pesos_en_capa:
-                anchura = 1 if componente_de_peso.dim() <= 1 else componente_de_peso.shape[1]
+            imagen_capa = np.empty((1, 200, 0,  1))
+
+            for componente_de_peso in capa.get_weights(): # Pesos de la primera capa LSTM
+                anchura = 1 if componente_de_peso.ndim <= 1 else componente_de_peso.shape[1]
                 altura = componente_de_peso.shape[0]
+
                 if anchura > altura:
                     altura_t = altura
                     altura = anchura
                     anchura = altura_t
+
                 # Concatena la imagen de los pesos de la componente de la capa con una linea blanca divisora
-                imagen_parametro = np.concatenate((componente_de_peso.reshape((1,altura,anchura,1)), np.ones((1, 200, 1, 1))), axis=2)
-                if componente == 1:
-                    imagen_capa = imagen_parametro
-                else:
-                    imagen_capa = np.concatenate((imagen_capa, imagen_parametro), axis = 2)
-                componente = componente+1
+                imagen_parametro = np.concatenate((componente_de_peso.reshape((1,altura,anchura,1)), np.ones((1,altura, 1, 1))), axis=2)
+                longitud_pad = ((0, 0), (0, 200-altura if 200 > altura else 0), (0, 0), (0, 0))
+                imagen_parametro = np.pad(imagen_parametro, longitud_pad, mode='constant',constant_values=1)
+                imagen_capa = np.concatenate((imagen_capa, imagen_parametro), axis = 2)
             
-            imagen_total = np.concatenate((imagen_capa, np.ones((1, 200, 2, 1))), axis=2)
+            imagen_total = np.concatenate((imagen_capa, np.ones((1, (200 if 200 > altura else altura), 1, 1))), axis=2)
+            imagen_total = np.concatenate((imagen_parametro, imagen_total), axis = 2)
+        #imagen_total = imagen_total.resahpe(1,imagen_total.shape[1],1,imagen_total.shape[2]) #lo ordenamos en forma NHCW
+        summary.image(f'Pesos de la red {s_entr_pred if self.e_predictivo else s_vacia}', imagen_total, epoca+1)
+        self.writer.flush()
