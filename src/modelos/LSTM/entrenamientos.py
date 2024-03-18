@@ -188,13 +188,3 @@ class CalendarizadorPesos(Callback):
                 componente = componente+1
             
             imagen_total = np.concatenate((imagen_capa, np.ones((1, 200, 2, 1))), axis=2)
-
-
-            # Visualizar los pesos
-            # plt.figure(figsize=(10, 5))
-            # plt.plot(layer_weights)
-            # plt.title(f'Pesos de la capa {self.layer_name} - Epoch {epoch+1}')
-            # plt.xlabel('Neurona')
-            # plt.ylabel('Peso')
-            # plt.grid(True)
-            # plt.show()
