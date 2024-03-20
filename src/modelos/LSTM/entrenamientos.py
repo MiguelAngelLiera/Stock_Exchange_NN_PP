@@ -11,16 +11,16 @@ from ...utilerias import utilerias as utls
 from torchvision.transforms import ToTensor
 import matplotlib.pyplot as plt
 
-writer = SummaryWriter('logs/DWT_LSTM')
+writer = SummaryWriter('logs/DWT_LSTM/auto_predictiva')
 s_vacia = ""
 s_entr_pred = 'durante el entrenamiento predictivo'
 
-def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t_lote=1,optimizador=SGD):
+def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t_lote=1,callbacks = [], optimizador=SGD):
 
     red.compile(optimizer=SGD(learning_rate=lr),loss='mean_squared_error')#SGD(learning_rate=1e-3)
 
     # Definir el callback con la función de la tasa de aprendizaje
-    lr_callback = CalendarizadorTasaAprendizaje(initial_lr=lr, decay_factor=0.5,red = red)#0.9
+    #lr_callback = CalendarizadorTasaAprendizaje(initial_lr=lr, decay_factor=0.5,red = red)#0.9
     ts_cierre_s_pred = c_entrenamiento_n
 
     loss_m = []
@@ -72,7 +72,12 @@ def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t
                 print(f"Predicción post entrenamiento : { prediccion_post_entrenamiento}")
                 print(f"PERDIDAAAA despues: {red.test_on_batch(np.array(x_lote),np.array( [y_entrenamiento[i-t_lote+1:i+1]]))}")
                 #ts_cierre_s_pred_post_entreno = np.concatenate([ts_cierre_s_pred_post_entreno, prediccion])
-                lr_callback.on_batch_begin(n_lote, logs={'loss': train, 'epoca': epoca+1})  # Llamada al callback en cada lote
+                for callback in callbacks:
+                    if hasattr(callback, "on_batch_begin"):
+                        callback.on_batch_begin(n_lote, logs={'loss': train, 'epoca': epoca+1})  # Llamada al callback en cada lote
+                    if hasattr(callback, "on_epoch_end"):
+                        callback.on_epoch_end(epoca+1)  # Llamada al callback en cada lote
+                    #if hasattr(callback, "on_batch_begin"):
                 #red.optimizer.lr =
                 x_lote = []
                 n_ejemplar = 0
@@ -95,19 +100,22 @@ def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t
         image = PIL.Image.open(plot_buf)
         image = ToTensor()(image).unsqueeze(0)
         writer.add_image(f'Comportamiento de la serie de tiempo para la red: {0} durante el entrenamiento predictivo', image, epoca+1,dataformats='NCHW')
-        lr_callback.reset()
+        for callback in callbacks:
+            if hasattr(callback, "reset"):
+                callback.reset()
     writer.close()
 
     return loss_m
 
-class CalendarizadorTasaAprendizaje(Callback):
-    def __init__(self, initial_lr, decay_factor, red):
+class CalendarizadorTasaAprendizaje(TensorBoard,Callback):
+    def __init__(self, log_dir, initial_lr, decay_factor, red):
         super(CalendarizadorTasaAprendizaje, self).__init__()
         self.initial_lr = initial_lr
         self.decay_factor = decay_factor
         self.iteration = 0  # Contador de iteraciones
         self.lote_designado = 1
         self.red=red
+        self.writer = summary.create_file_writer(log_dir)
 
     def on_batch_begin(self, batch, logs=None):
         print(f"loss en el callback: {logs['loss']}, batch {batch}, lote_designado {self.lote_designado}")
@@ -119,7 +127,9 @@ class CalendarizadorTasaAprendizaje(Callback):
         lr = self.initial_lr / (1 + self.decay_factor * self.iteration)
         print(f"lr: {lr}, batch: {batch}")
         if (logs['epoca'] == 1):
-            writer.add_scalar("Learning Rate en cada batch: ",lr,batch)
+            #writer.add_scalar("Learning Rate en cada batch: ",lr,batch)
+            with self.writer.as_default():
+                summary.scalar("Learning Rate en cada batch: ",lr,batch)
         #print(red.summary())
         K.set_value(self.red.optimizer.lr, lr)
         self.iteration += 1
@@ -155,27 +165,39 @@ class CalendarizadorPredicciones(TensorBoard):
             image = image.permute(0, 2, 3, 1) #lo ordenamos en forma NHCW
             s_pred= 'predictivo'
             summary.image(f'Comportamiento de la serie de tiempo para la red: {self.model.name} durante el entrenamiento {s_pred if self.e_predictivo else s_vacia}', image, epoch+1)
-            for layer in self.model.layers:
-                for weight in layer.weights:
-                    summary.histogram(f"Peso: {weight.name} de la red: {self.model.name}", data=weight, step=epoch)
+            
         self.writer.flush()
 
 class CalendarizadorPesos(TensorBoard):
-    def __init__(self, log_dir, e_predictivo= False):
-        super(CalendarizadorPesos, self).__init__()
+    def __init__(self, log_dir, e_predictivo= False, genera_histogramas = False, red = 0):
+        super().__init__()
         self.log_dir = log_dir
         self.writer = summary.create_file_writer(log_dir)
         self.e_predictivo = e_predictivo
+        self.genera_histogramas = genera_histogramas
+        if e_predictivo:
+            self.model = red
 
     def on_epoch_end(self, epoca, logs=None):
-        imagen_total = np.empty((1, 200, 0, 1)) # se inicializa la imagen total de todos los componentes de cada capa
+        #obtenermos altura maxima de entre todos los pesos de la red
+        altura_max = 0
+        for capa in self.model.layers:
+            for componente_de_peso in capa.get_weights():
+                altura_max = componente_de_peso.shape[0] if componente_de_peso.shape[0] > altura_max else altura_max
+
+        imagen_total = np.empty((1, altura_max, 0, 1)) # se inicializa la imagen total de todos los componentes de cada capa
         # Obtener los pesos de la capa deseada
         for capa in self.model.layers:
-            imagen_capa = np.empty((1, 200, 0,  1))
+            imagen_capa = np.empty((1, altura_max, 0, 1))
 
-            for componente_de_peso in capa.get_weights(): # Pesos de la primera capa LSTM
-                anchura = 1 if componente_de_peso.ndim <= 1 else componente_de_peso.shape[1]
-                altura = componente_de_peso.shape[0]
+            for componente_de_peso in capa.weights: # Pesos de la primera capa LSTM
+                if self.genera_histogramas:
+                    with self.writer.as_default():    
+                        summary.histogram(f"Peso: {componente_de_peso.name} de la red: {self.model.name}", data=componente_de_peso, step=epoca)
+                imagen_parametro = np.empty((1, altura_max, 0, 1))
+
+                anchura = 1 if componente_de_peso.numpy().ndim <= 1 else componente_de_peso.numpy().shape[1]
+                altura = componente_de_peso.numpy().shape[0]
 
                 if anchura > altura:
                     altura_t = altura
@@ -183,13 +205,25 @@ class CalendarizadorPesos(TensorBoard):
                     anchura = altura_t
 
                 # Concatena la imagen de los pesos de la componente de la capa con una linea blanca divisora
-                imagen_parametro = np.concatenate((componente_de_peso.reshape((1,altura,anchura,1)), np.ones((1,altura, 1, 1))), axis=2)
-                longitud_pad = ((0, 0), (0, 200-altura if 200 > altura else 0), (0, 0), (0, 0))
+                imagen_parametro = np.concatenate((componente_de_peso.numpy().reshape((1,altura,anchura,1)), np.ones((1,altura, 1, 1))), axis=2)
+
+                #Se extiende la longitud de la imagen a la altura máxima
+                longitud_pad = ((0, 0), (0, altura_max-altura if altura_max > altura else 0), (0, 0), (0, 0))
                 imagen_parametro = np.pad(imagen_parametro, longitud_pad, mode='constant',constant_values=1)
+
                 imagen_capa = np.concatenate((imagen_capa, imagen_parametro), axis = 2)
+                imagen_capa = np.concatenate((imagen_capa, np.ones((1, altura_max, 1, 1))), axis=2)
+
+            with self.writer.as_default():
+                if (imagen_capa.shape[2] != 0):
+                    summary.image('Pesos de la capa: ' + capa.name, imagen_capa, epoca+1)#
             
-            imagen_total = np.concatenate((imagen_capa, np.ones((1, (200 if 200 > altura else altura), 1, 1))), axis=2)
-            imagen_total = np.concatenate((imagen_parametro, imagen_total), axis = 2)
-        #imagen_total = imagen_total.resahpe(1,imagen_total.shape[1],1,imagen_total.shape[2]) #lo ordenamos en forma NHCW
-        summary.image(f'Pesos de la red {s_entr_pred if self.e_predictivo else s_vacia}', imagen_total, epoca+1)
-        self.writer.flush()
+            imagen_total = np.concatenate((imagen_total, imagen_capa), axis = 2)
+        
+            #imagen_total = imagen_total.resahpe(1,imagen_total.shape[1],1,imagen_total.shape[2]) #lo ordenamos en forma NHCW
+        #print(f"imagen_total: {imagen_total}")
+        with self.writer.as_default():
+            summary.image(f'Pesos de la red {s_entr_pred if self.e_predictivo else s_vacia}', imagen_total, epoca+1)#
+        
+           # summary.histogram(f"Peso de la red: ", data=8, step=epoca+1)
+        #self.writer.flush()

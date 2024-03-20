@@ -218,16 +218,36 @@ def genera_salida(vect,tam,red):
 
     return o
 
+# def eliminar_archivos_registro(carpeta):
+#     # Obtenemos la lista de archivos en la carpeta logs
+#     if not os.path.exists(carpeta):
+#         return
+#     files = os.listdir(carpeta)
+    
+#     # Filtramos los archivos que tienen el sufijo "events"
+#     archivos_registro = [archivo for archivo in files if archivo.startswith("events")]
+    
+#     # Eliminamos los archivos de registro
+#     for archivo in archivos_registro:
+#         os.remove(f"{carpeta}/" + archivo)
+
 def eliminar_archivos_registro(carpeta):
-    # Obtenemos la lista de archivos en la carpeta logs
-    files = os.listdir(carpeta)
+    # Verificar si la carpeta existe
+    if not os.path.exists(carpeta):
+        return
     
-    # Filtramos los archivos que tienen el sufijo "events"
-    archivos_registro = [archivo for archivo in files if archivo.startswith("events")]
-    
-    # Eliminamos los archivos de registro
-    for archivo in archivos_registro:
-        os.remove(f"{carpeta}/" + archivo)
+    # Recorrer todos los elementos en la carpeta
+    for elemento in os.listdir(carpeta):
+        ruta_elemento = os.path.join(carpeta, elemento)
+        
+        # Verificar si el elemento es un directorio
+        if os.path.isdir(ruta_elemento):
+            # Si es un directorio, llamar recursivamente a la función en ese directorio
+            eliminar_archivos_registro(ruta_elemento)
+        else:
+            # Si es un archivo, verificar si es un archivo de eventos y eliminarlo si lo es
+            if elemento.startswith("events"):
+                os.remove(ruta_elemento)
 
 def clear_tensorboard_database():
     # Obtiene la ruta del directorio de logs
