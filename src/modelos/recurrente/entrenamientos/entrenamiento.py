@@ -13,17 +13,18 @@ from torchvision.transforms import ToTensor
 s_vacia = ""
 s_entr_pred = 'durante el entrenamiento predictivo'
 
-def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t_lote=1,callbacks = [], optimizador=SGD,loss='mean_squared_error',log_dir='logs'):
+def entrena(red,X_entrenamiento,y_entrenamiento,time_steps,refuerzo=9,lr=0.001,epocas=10,t_lote=1,callbacks = [], optimizador=SGD,loss='mean_squared_error',log_dir='logs'):
+    
     writer = SummaryWriter(log_dir)
     #Se compila la red con los parametros de entrada de la función
     red.compile(optimizer=optimizador(learning_rate=lr),loss=loss)#SGD(learning_rate=1e-3)
     
-    ts_cierre_s_pred = c_entrenamiento_n
+    ts_cierre_s_pred = X_entrenamiento
 
     loss_m = []
 
     for epoca in range(epocas):  # Número de épocas
-        ts_cierre_s_pred = c_entrenamiento_n[:time_steps] #:8 se toman los primeros 8 elementos del conjunto de entrenamiendo predictivo 
+        ts_cierre_s_pred = X_entrenamiento[:time_steps] #:8 se toman los primeros 8 elementos del conjunto de entrenamiendo predictivo 
 
         n_ejemplar = 1 #número de ejemplar que ocupa en el lote
         n_lote = 1 
@@ -37,6 +38,10 @@ def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t
 
             # Predicción del modelo 
             prediccion = red(ejemplar.reshape(1,time_steps,1))
+
+            if((i+1)%refuerzo==0):
+                # El refuerzo es un dato que tomamos del conjunto real y no de los que predice la red para 'ayudarle' al entrenamiento a que e corrija correctamente
+                prediccion = np.array([[y_entrenamiento[i]]])
             
             print(f"Ejemplar x: {ejemplar}" + f" | y: {np.array(y_entrenamiento[i])} | " + f"Predicción actual: {prediccion}")
 
@@ -46,13 +51,13 @@ def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t
             if(n_ejemplar == t_lote):# si el numero de ejemplar es igual al tamño del lote, es decir, el lote esta lleno, se puede entrenar la red
 
                 lr = float(red.optimizer.lr)
-                #print(f"Lr que voy a aplicar en el lote: {np.array(x_lote)} es {lr}") # se comenta por popsible debug
+                print(f"Lr que voy a aplicar en el lote es {lr}") # se comenta por popsible debug
                 #print(f"Verdaderas salidas: {np.array( [y_entrenamiento[i-t_lote+1:i+1]])}")
                 #print(f"PERDIDAAAA antes: {red.test_on_batch(np.array(x_lote),np.array( [y_entrenamiento[i-t_lote+1:i+1]]))}")
 
                 # Se usa el método train_on_batch, que nos permite realizar un paso de la optimizacion, es de cir, un solo ajuste a los pesos
                 # a partir de un lote lleno de ejemplares (caracteristicas) junto con sus respectivas etiquetas
-                train = red.train_on_batch(np.array(x_lote), np.array( [y_entrenamiento[i-t_lote+1:i+1]]))
+                train = red.train_on_batch(np.array(x_lote), np.array( y_entrenamiento[i-t_lote+1: i+1]))
 
                 # prediccion_post_entrenamiento = red(ejemplar.reshape(1,time_steps,1))
                 #print(f"Predicción post entrenamiento : {prediccion_post_entrenamiento}")
@@ -63,8 +68,6 @@ def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t
                 for callback in callbacks:
                     if hasattr(callback, "on_batch_begin"):
                         callback.on_batch_begin(n_lote, logs={'loss': train, 'epoca': epoca+1})  # Llamada al callback en cada lote
-                    if hasattr(callback, "on_epoch_end"):
-                        callback.on_epoch_end(epoca+1) 
 
                 x_lote = []
                 n_ejemplar = 0
@@ -75,17 +78,19 @@ def entrena(red,c_entrenamiento_n,y_entrenamiento,time_steps,lr=0.01,epocas=10,t
             print(">Fin lote<")
 
         # Registra la perdida actual de todo el conjunto de entrenamiento contra lo que la red fue prediciendo en cada iteración    
-        mse = np.mean(np.array(mean_squared_error(c_entrenamiento_n,ts_cierre_s_pred[:,0])))
+        mse = np.mean(np.array(mean_squared_error(X_entrenamiento,ts_cierre_s_pred[:,0])))
         loss_m.append(mse)
         writer.add_scalar(f'Perdida de entrenamiento predictivo de la red: {red.name}', mse, epoca+1)
         
-        plot_buf = utls.gen_plot(c_entrenamiento_n,ts_cierre_s_pred,mse)
+        plot_buf = utls.gen_plot(X_entrenamiento,ts_cierre_s_pred,mse)
         image = PIL.Image.open(plot_buf)
         image = ToTensor()(image).unsqueeze(0)
         writer.add_image(f'Comportamiento de la serie de tiempo para la red: {red.name} durante el entrenamiento predictivo', image, epoca+1,dataformats='NCHW')
 
         #Se resetea el callback del learning rate
         for callback in callbacks:
+            if hasattr(callback, "on_epoch_end"):
+                callback.on_epoch_end(epoca+1) 
             if hasattr(callback, "reset"):
                 callback.reset()
     writer.close()
@@ -105,14 +110,15 @@ class CalendarizadorTasaAprendizaje(TensorBoard,Callback):
     def on_batch_begin(self, batch, logs=None):
         print(f"loss en el callback: {logs['loss']}, batch {batch}, lote_designado {self.lote_designado}")
         if (logs['loss'] <= 0.01 and batch == self.lote_designado):
+            # El lote designado se trata del lote a partir del cual el lr empezara a decaer, esto para que los primeros lotes
+            # tengae mayor prioridad (se les de mejor lr y en consecuencia aprenda la red mejor estos)
             self.lote_designado = self.lote_designado + 1
-            self.decay_factor = self.decay_factor  * 0.8
-            print(f">>nuevo factor: {self.decay_factor*0.8}")
+            self.decay_factor = self.decay_factor * 0.8
+            print(f">>nuevo factor: {self.decay_factor}")
         #lr = self.initial_lr * (self.decay_factor ** self.iteration)
         lr = self.initial_lr / (1 + self.decay_factor * self.iteration)
         print(f"lr: {lr}, batch: {batch}")
         if (logs['epoca'] == 1):
-            #writer.add_scalar("Learning Rate en cada batch: ",lr,batch)
             with self.writer.as_default():
                 summary.scalar("Learning Rate en cada batch: ",lr,batch)
         #print(red.summary())
