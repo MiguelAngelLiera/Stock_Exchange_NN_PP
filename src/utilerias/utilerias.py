@@ -10,7 +10,7 @@ import torch.optim as optim
 #from levenberg_marquardt import LM
 import os
 import io
-from ..modelos.DWT_Auto_regresivo.NARNN import NARNN
+from ..modelos.auto_regresivo.NARNN.NARNN import NARNN
 from keras.models import Sequential
 from keras import Model
 # from torch.utils.tensorboard import SummaryWriter
