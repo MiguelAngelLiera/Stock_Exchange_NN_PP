@@ -173,7 +173,12 @@ def genera_prediccion_1(c_pruebas,red,t_ent):
 def genera_prediccion_predictiva(datos_iniciales,t_ent,t_datos,red):
     """
     Genera prediccion cada n días, usando los datos que predice
-    :t_datos: tamaño del conjunto de datos
+
+    Args:
+        datos_iniciales: datos originales a partir de los cuales toda la predicción iniciará
+        t_ent tamaño de entrada de datos de la red
+        t_datos: tamaño del conjunto de datos
+        red: red a partir de la cual se generará la predicción
     """
     #serie = torch.tensor(c_pruebas[0][:, :t_ent][0].clone().detach())#obtiene los primeros 8 datos del conjunto de prueba
     serie = datos_iniciales

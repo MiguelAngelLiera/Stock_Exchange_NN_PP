@@ -220,3 +220,47 @@ class CalendarizadorPesos(TensorBoard):
         
            # summary.histogram(f"Peso de la red: ", data=8, step=epoca+1)
         #self.writer.flush()
+            
+# --------------- v1 entr. para redes neuronales lstm de manera auto-predictiva -------------------
+            
+            # ts_cierre_s_pred = c_entrenamiento_n
+
+# loss_m = []
+# for epoch in range(100):  # Número de épocas
+#     ts_cierre_s_pred = c_entrenamiento_n[:time_steps]#se obtienen los primeros time_steps(8) elementos del trainig set
+#     loss = []
+#     X_train_c_pred = []
+#     # print(f"grtrt: {ts_cierre_s_pred}")
+#     for i in range(time_steps, N):
+#         # Obtener las características y la etiqueta actual
+#         x_actual = ts_cierre_s_pred[i-time_steps:i,0]
+#         X_train_c_pred.append(x_actual)
+#         x_actual = x_actual.reshape(1,time_steps,1)
+
+#         y_actual = np.array([y_entrenamiento_n[i-time_steps]])
+
+#         print(f"x_actual: {x_actual}")
+#         print(f"y_actual: {y_actual}")
+        
+#         # Entrenar el modelo con las nuevas características y la etiqueta real
+#         #loss.append(red.train_on_batch(x_actual, y_actual))
+
+#         # Predicción del modelo
+#         #prediccion = red.predict(x_actual)#.reshape(1,1,1)
+#         prediccion = red(x_actual)
+        
+#         # Agregar la predicción a las características para el siguiente paso
+#         # print(ts_cierre_s_pred)
+#         print(f"prediccion: {prediccion}")
+#         ts_cierre_s_pred = np.concatenate([ts_cierre_s_pred, prediccion])
+
+
+
+#     # print(f"mean: {np.mean(np.array(loss))}")
+#     # loss_m.append(np.mean(np.array(loss)))
+#     X_train_c_pred = np.array(X_train_c_pred)
+#     X_train_c_pred = np.reshape(X_train_c_pred, (X_train_c_pred.shape[0], X_train_c_pred.shape[1], 1))
+#     history = red.fit(X_train_c_pred, y_entrenamiento_n, epochs=1, batch_size=32)
+#     loss = history.history['loss']
+#     loss_m.append(loss)
+#     loss_m.append(mean_squared_error(c_entrenamiento_n,ts_cierre_s_pred[:,0]))
