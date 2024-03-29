@@ -1,25 +1,18 @@
-
 from keras import Model
-from keras.models import Sequential
 from keras.layers import LSTM
 from keras.layers import Dropout
 from keras.layers import Dense
 
-# def LSTM(input_dim,output_dim=1):
-#     #Se entrena con un aprendizaje por reforzamiento del profesor
-#     red = Sequential()
-#     red.add(LSTM(units=50,return_sequences=True,input_shape=(input_dim, 1)))#tiene un tamaño de entrada de 8 y de salida 1, input_shape = (8, 1)
-#     red.add(Dropout(0.2))#Se apagan aleatoriamente el 20% de las neuronas de la capa anterior
-#     red.add(LSTM(units=50,return_sequences=True))
-#     red.add(Dropout(0.2))
-#     red.add(LSTM(units=50,return_sequences=True))
-#     red.add(Dropout(0.2))
-#     red.add(LSTM(units=50))
-#     red.add(Dropout(0.2))
-#     red.add(Dense(units=output_dim))
-#     return red
-
 class red_LSTM(Model):
+    """
+    Red Neuronal con celdas de Memoria de Corto y Largo Plazo
+    
+    Estructura de la red:
+        Entrada: los n valores anteriores de un instante de la serie.
+        Arquitectura: 4 capas con 50 celdas LSTM e intercaladas 4 capas de desactivación (dropout)
+        del 20% y finalmente una última capa densamente conectada que comprende una sola neurona. 
+        Salida: un solo valor que representa la semana consecuente a las n de entrada.
+    """
     def __init__(self,input_dim,output_dim):
         super().__init__()#red_LSTM,self
         self.LSTM1 = LSTM(units=50,return_sequences=True,input_shape=(input_dim, 1))
@@ -33,6 +26,9 @@ class red_LSTM(Model):
         self.dense = Dense(units=output_dim)
 
     def call(self, inputs):
+        """
+        Define el comportamiento del modelo cuando se llama.
+        """
         x = self.LSTM1(inputs)
         x = self.dropout1(x)
         x = self.LSTM2(x)
