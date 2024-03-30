@@ -4,6 +4,15 @@ from keras.layers import Dropout
 from keras.layers import Dense
 
 class red_GRU(Model):
+    """
+    Red Neuronal con Unidades Recurrentes Cerradas
+    
+    Estructura de la red:
+        Entrada: los n valores anteriores de un instante de la serie.
+        Arquitectura: 4 capas con 50 celdas LSTM e intercaladas 4 capas de desactivación (dropout)
+        del 20% y finalmente una última capa densamente conectada que comprende una sola neurona. 
+        Salida: un solo valor que representa la semana consecuente a las n de entrada.
+    """
     def __init__(self,input_dim,output_dim):
         super().__init__()#red_GRU,self
         self.GRU1 = GRU(units=50,return_sequences=True,input_shape=(input_dim, 1))
@@ -17,6 +26,9 @@ class red_GRU(Model):
         self.dense = Dense(units=output_dim)
 
     def call(self, inputs):
+        """
+        Define el comportamiento del modelo cuando se llama.
+        """
         x = self.GRU1(inputs)
         x = self.dropout1(x)
         x = self.GRU2(x)
