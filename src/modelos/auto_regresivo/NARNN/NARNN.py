@@ -7,7 +7,7 @@ class NARNN(nn.Module):
     
     Estructura de la red:
         Entrada: los n valores anteriores de un instante de la serie.
-        Arquitectura: 3 capas densamente conectadas. La primera con la función tangente-sigmode 
+        Arquitectura: 3 capas densamente conectadas con 10 neuronas cada una. La primera con la función tangente-sigmode 
         y la segunda con logaritmo-sigmoide como funciones de activación. Luego la capa de salida,
         con una función lineal como activación comprende una sola neurona. 
         Salida: un solo valor que representa la semana consecuente a las n de entrada.

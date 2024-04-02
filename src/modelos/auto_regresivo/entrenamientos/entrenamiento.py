@@ -50,7 +50,7 @@ class Entrenamiento:
         lr_callback = CustomLearningRateScheduler(lr,decay_factor)
         lote_designado = 1 # lote elegido para empezar el decaimiento de lr
         for epoca in range(0,epocas+1): # número de apocas que se requiere que la red entrene
-            print(f"---Inicio de epoca: {epoca}--")
+            print(f"---Inicio de epoca {epoca+1}--")
             
             s_original, s_pred = self.entrena_por_lote(inputs,t_ent,t_sal,e_predictivo,batch_size,lote_designado,epoca,lr,λ,lr_callback)
 
@@ -60,7 +60,7 @@ class Entrenamiento:
             perdida = self.criterion(torch.tensor(s_original),torch.tensor(s_pred)) 
 
             # print("<<Perdida: "+str(perdida.item()) + f" epoca: {epoca}>>")
-            self.writer.add_scalar(f'Perdida de entrenamiento predictivo de la red: {self.red.nombre} {s_entr_pred if e_predictivo else s_vacia}', float(perdida.item()), epoca)
+            self.writer.add_scalar(f'Perdida de entrenamiento de la red: {self.red.nombre} {s_entr_pred if e_predictivo else s_vacia}', float(perdida.item()), epoca)
             #writer.add_histogram(f'Serie de tiempo predicha para la epoca: {epoca}',torch.tensor(s_pred),epoca)
 
             self.pinta_pesos(epoca,e_predictivo)
@@ -69,11 +69,11 @@ class Entrenamiento:
 
             image = PIL.Image.open(plot_buf)
             image = ToTensor()(image).unsqueeze(0)
-            s_pred= 'predictivo'
-            self.writer.add_image(f'Comportamiento de la serie de tiempo para la red: {self.red.nombre} durante el entrenamiento {s_pred if e_predictivo else s_vacia}', image, epoca+1,dataformats='NCHW')
+            str_pred= 'auto_predictivo'
+            self.writer.add_image(f'Comportamiento de la serie de tiempo para la red: {self.red.nombre} durante el entrenamiento {str_pred if e_predictivo else s_vacia}', image, epoca+1,dataformats='NCHW')
 
             if (perdida.item() <= self.tolerancia):
-                print(f"-- Epoca final: {epoca+1} --")
+                print(f"-- Se superó la tolerancia. Epoca final: {epoca+1} --")
                 break
             lr_callback.reset()
         #writer.add_figure(f'Pérdida de entrenamiento de {self.red.nombre}', plt.gcf())
@@ -105,7 +105,7 @@ class Entrenamiento:
                 salidas_por_lote.append(salida)
                 
                 pred = self.red(entradas) #prediccion despues de haber modificado los pesos
-                print(f"-----> Predicción pre entreno: {pred} ")
+                print(f"---> Predicción pre entreno: {pred} ")
                 serie = torch.cat((serie,pred))# Se precidce el resultado con la red despues del paso y se integra a la serie
                 s_pred.append(pred.item())
 
@@ -207,7 +207,6 @@ class CustomLearningRateScheduler():
     
     def reset(self):
         self.iteration = 0
-        print("Se resetea")
         return self.initial_lr
     
 # def entrena_LM(red,n_red,inputs,epocas,lr,λ,t_ent = 8,t_sal = -1):
