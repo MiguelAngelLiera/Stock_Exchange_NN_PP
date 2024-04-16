@@ -118,7 +118,7 @@ class LM:
             #print("Pesos red: " + str([i for i in self.red.parameters()]))
             if(self.imprimir):
                 print(f"entrada: {entrada}")
-                print("--->Predicción: " + str(self.red(entrada)))
+                print("--->Predicción: " + str(salida))
                 print("--->Salida esperada: " + str(salida_esperada))
             
             # Convertir la lista de tensores a un solo tensor
