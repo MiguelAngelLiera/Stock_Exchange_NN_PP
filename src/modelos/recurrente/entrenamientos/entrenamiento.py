@@ -109,7 +109,7 @@ class CalendarizadorTasaAprendizaje(TensorBoard,Callback):
 
     def on_batch_begin(self, batch, logs=None):
         print(f"loss en el callback: {logs['loss']}, batch {batch}, lote_designado {self.lote_designado}")
-        if (logs['loss'] <= 0.01 and batch == self.lote_designado):
+        if (logs['loss'] <= 0.001 and batch == self.lote_designado):
             # El lote designado se trata del lote a partir del cual el lr empezara a decaer, esto para que los primeros lotes
             # tengae mayor prioridad (se les de mejor lr y en consecuencia aprenda la red mejor estos)
             self.lote_designado = self.lote_designado + 1
