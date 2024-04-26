@@ -27,7 +27,8 @@ def rmse(y_true, y_pred):
         y_true: el conjunto de datos original
         y_pred: el conjunto de datos que se predice
     """
-    return round(np.sqrt(np.mean((y_true - y_pred) ** 2)),4)
+    y_true, y_pred = aux_metricas(y_true, y_pred)
+    return round(np.sqrt(np.mean((y_true - y_pred) ** 2)),8)
 
 def mape(y_true, y_pred):
     """
@@ -37,6 +38,7 @@ def mape(y_true, y_pred):
         y_true: el conjunto de datos original
         y_pred: el conjunto de datos que se predice
     """
+    y_true, y_pred = aux_metricas(y_true, y_pred)
     # Calcular el error porcentual absoluto para cada observación
     errores_porcentuales = np.abs((y_true - y_pred) / y_true)
     
@@ -53,11 +55,21 @@ def directional_symmetry(y_true, y_pred):
         y_true: el conjunto de datos original
         y_pred: el conjunto de datos que se predice
     """
+    y_true, y_pred = aux_metricas(y_true, y_pred)
     N = len(y_true)
     suma = 0
     for i in range(N-1):
         suma += 1 if ((y_true[i+1]-y_true[i])*(y_pred[i+1]-y_pred[i]) >= 0) else 0
     return round(100/N*suma,4)
+
+def aux_metricas(y_true, y_pred):
+    """Funcion que realiza un reajuste a la foma de los vectopres par aque las metricas
+    se calculen correctamente."""
+    if len(y_true.shape) > 1:
+        y_true = np.reshape(y_true, (y_true.shape[0]))
+    if len(y_pred.shape) > 1:
+        y_pred = np.reshape(y_pred, (y_pred.shape[0]))
+    return y_true, y_pred
 
 def normalizar(arr):
     """
