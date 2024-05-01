@@ -13,7 +13,7 @@ from torchvision.transforms import ToTensor
 s_vacia = ""
 s_entr_pred = 'durante el entrenamiento predictivo'
 
-def entrena(red,X_entrenamiento,y_entrenamiento,time_steps,refuerzo=9,lr=0.001,epocas=10,t_lote=1,callbacks = [], optimizador=SGD,loss='mean_squared_error',log_dir='logs'):
+def entrena(red,X_entrenamiento,y_entrenamiento,time_steps,refuerzo=0,lr=0.001,epocas=10,t_lote=1,callbacks = [], optimizador=SGD,loss='mean_squared_error',log_dir='logs'):
     
     writer = SummaryWriter(log_dir)
     #Se compila la red con los parametros de entrada de la función
@@ -39,9 +39,9 @@ def entrena(red,X_entrenamiento,y_entrenamiento,time_steps,refuerzo=9,lr=0.001,e
             # Predicción del modelo 
             prediccion = red(ejemplar.reshape(1,time_steps,1))
 
-            if((i+1)%refuerzo==0):
-                # El refuerzo es un dato que tomamos del conjunto real y no de los que predice la red para 'ayudarle' al entrenamiento a que e corrija correctamente
-                prediccion = np.array([[y_entrenamiento[i]]])
+            # if((i+1)%refuerzo==0):
+            #     # El refuerzo es un dato que tomamos del conjunto real y no de los que predice la red para 'ayudarle' al entrenamiento a que e corrija correctamente
+            #     prediccion = np.array([[y_entrenamiento[i]]])
             
             print(f"Ejemplar x: {ejemplar}" + f" | y: {np.array(y_entrenamiento[i])} | " + f"Predicción actual: {prediccion}")
 
