@@ -7,17 +7,11 @@ from matplotlib import pyplot as plt
 import torch, numpy as np
 import torch.nn as nn
 import torch.optim as optim
-#from levenberg_marquardt import LM
 import os
 import io
 from ..modelos.auto_regresivo.NARNN.NARNN import NARNN
 from keras.models import Sequential
 from keras import Model
-# from torch.utils.tensorboard import SummaryWriter
-
-# criterion = nn.MSELoss()
-# writer = SummaryWriter('logs')
-# tolerancia = 0.001
 
 def rmse(y_true, y_pred):
     """
@@ -182,7 +176,7 @@ def genera_prediccion_1(c_pruebas,red,t_ent):
     #     print("serie: " + str(serie))
     return serie
 
-def genera_prediccion_predictiva(datos_iniciales,t_ent,t_datos,red):
+def genera_pred_auto_predictiva(datos_originales,t_ent,red,correccion=False):
     """
     Genera prediccion cada n días, usando los datos que predice
 
@@ -191,27 +185,31 @@ def genera_prediccion_predictiva(datos_iniciales,t_ent,t_datos,red):
         t_ent tamaño de entrada de datos de la red
         t_datos: tamaño del conjunto de datos
         red: red a partir de la cual se generará la predicción
+        correccion: si se quiere que cada time_steps se tomen time_steps datos originales para predecir
     """
-    #serie = torch.tensor(c_pruebas[0][:, :t_ent][0].clone().detach())#obtiene los primeros 8 datos del conjunto de prueba
-    serie = datos_iniciales
-    ventana = 1
-    for _ in range(t_datos):
+    t_datos = len(datos_originales)-t_ent
+    serie = datos_originales[:t_ent]
+    prediccion = datos_originales[:t_ent]
+    c = 0
+    t_correccion = t_ent
+    for ventana in range(t_datos):
         if isinstance(red, NARNN):
-            predicted_output = red(serie[ventana-1:ventana-1+t_ent].clone().detach())
-            
-            #print("Salida predecida:" + str(predicted_output))
-            serie = torch.cat((serie, predicted_output))#concatena la salida predicha con los datos predichos anteriores
-        #print("serie: " + str(serie))
-        if isinstance(red, Sequential):
-            predicted_output = red.predict(np.array(serie[ventana-1:ventana-1+t_ent]).reshape(1, *red.layers[0].input_shape[1:]))
+            predicted_output = red(torch.Tensor(serie[ventana:ventana+t_ent]))
+            predicted_output = predicted_output.detach().numpy()
+        elif isinstance(red, Model) or isinstance(red, Sequential):
+            predicted_output = red.predict(np.array(serie[ventana:ventana+t_ent]).reshape(1, t_ent, 1)) # reshape(1, *red.layers[0].input_shape[1:]))
+        
+        if (((ventana+t_ent) % t_ent == 0 and ((ventana+t_ent) / t_ent) % 2 == 0) or c > 0) and correccion: # a partir de la posicion 16, dato numero 17. tomara los valores originales
+            serie = np.append(serie,datos_originales[ventana+t_ent])
+            c = 0 if c == 7 else c + 1
+        else:
+                #serie = torch.cat((serie, predicted_output)) 
+            #prediccion = torch.cat((prediccion, predicted_output)) #concatena la salida predicha con los datos predichos anteriores
             serie = np.concatenate((serie, predicted_output.reshape(1))) 
+        prediccion = np.concatenate((prediccion, predicted_output.reshape(1))) 
+                
             # print(f"serie: {serie}")
-        if isinstance(red, Model):
-            predicted_output = red.predict(np.array(serie[ventana-1:ventana-1+t_ent]).reshape(1, 8, 1))
-            serie = np.concatenate((serie, predicted_output.reshape(1))) 
-            # print(f"serie: {serie}")
-        ventana = ventana + 1
-    return serie
+    return prediccion
 
 def genera_salida(vect,tam,red):
     #print(vect)
