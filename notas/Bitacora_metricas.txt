@@ -214,6 +214,10 @@ Componente D1               0.1896  1.307293e+14  64.2857
 
 GFINBURO
 
+NARNN
+RMSE          MAPE      DS
+Precicción de c_prueba  0.2278  7.920827e+13  47.619
+
 LSTM
 RMSE          MAPE       DS
 Precicción de c_prueba  0.172  3.768713e+14  51.5873
@@ -256,6 +260,10 @@ Componente D1               0.1304  5.736014e+15  64.1026
 
 GFNORTEO
 
+NARNN
+RMSE          MAPE       DS
+Precicción de c_prueba  0.24  3.068893e+14  46.0317
+
 LSTM
 RMSE          MAPE       DS
 Precicción de c_prueba  0.1984  4.748244e+14  48.4127
@@ -285,6 +293,10 @@ Componente D2               0.2271  2.085305e+15  65.8730
 Componente D1               0.1947  3.791971e+14  66.6667
 
 GNP
+
+NARNN
+RMSE          MAPE       DS
+Precicción de c_prueba  0.2254  9.521528e+14  67.6471
 
 LSTM
 RMSE          MAPE       DS
@@ -363,6 +375,10 @@ Componente D2               0.2146  3.158249e+15  53.5714
 Componente D1               0.1992  8.035286e+15  60.7143
 
 Q
+
+NARNN
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1144  2.274520e+14  50.7937
 
 LSTM
 RMSE          MAPE      DS
