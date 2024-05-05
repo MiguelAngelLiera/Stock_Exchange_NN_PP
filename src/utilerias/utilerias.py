@@ -7,11 +7,14 @@ from matplotlib import pyplot as plt
 import torch, numpy as np
 import torch.nn as nn
 import torch.optim as optim
+from sklearn.metrics import mean_absolute_percentage_error,mean_squared_error 
 import os
 import io
 from ..modelos.auto_regresivo.NARNN.NARNN import NARNN
 from keras.models import Sequential
 from keras import Model
+import pandas as pd
+
 
 def rmse(y_true, y_pred):
     """
@@ -22,7 +25,8 @@ def rmse(y_true, y_pred):
         y_pred: el conjunto de datos que se predice
     """
     y_true, y_pred = aux_metricas(y_true, y_pred)
-    return round(np.sqrt(np.mean((y_true - y_pred) ** 2)),8)
+    #return round(np.sqrt(np.mean((y_true - y_pred) ** 2)),8)
+    return round(np.sqrt(mean_squared_error(y_true,y_pred)),4)
 
 def mape(y_true, y_pred):
     """
@@ -32,14 +36,15 @@ def mape(y_true, y_pred):
         y_true: el conjunto de datos original
         y_pred: el conjunto de datos que se predice
     """
+    #evita la división entre 0
+    #epsilon = 1e-8
     y_true, y_pred = aux_metricas(y_true, y_pred)
     # Calcular el error porcentual absoluto para cada observación
-    errores_porcentuales = np.abs((y_true - y_pred) / y_true)
+    #errores_porcentuales = np.abs((y_true - y_pred) / (y_true + epsilon))
     
     # Calcular el MAPE promedio
-    mape = round(np.mean(errores_porcentuales) * 100,4)
-    
-    return mape
+    #mape = round(np.mean(errores_porcentuales) * 100,4)
+    return mean_absolute_percentage_error(y_true,y_pred) * 100
 
 def directional_symmetry(y_true, y_pred):
     """
@@ -65,11 +70,13 @@ def aux_metricas(y_true, y_pred):
         y_pred = np.reshape(y_pred, (y_pred.shape[0]))
     return y_true, y_pred
 
-def normalizar(arr):
+def normalizar(arr,_min = 0,_max = 0):
     """
     Normaliza cada uno de los elementos de un arreglo.
     """
-    return np.vectorize(lambda x: (x-np.min(arr))/(np.max(arr)-np.min(arr)))(arr)
+    _min = np.min(arr) if _min == 0 else _min
+    _max = np.max(arr) if _max == 0 else _max
+    return np.vectorize(lambda x: (x-_min)/(_max-_min))(arr)
 
 # def desnormalizar(arr):
 #     """
@@ -299,6 +306,45 @@ def gen_plot(s_original,s_pred,perdida):
     plt.close()
     buf.seek(0)
     return buf 
+
+def genera_metricas(datos_originales,prediccion,cota=-1):
+    """
+        Genera un diccionario con la métricas concentradas de la reconstrucción y los componentes de una predicción.
+
+        Args:
+            datos_originales: diccionario que contiene los datos y componentes originales.
+            prediccion: diccionario que contiene las predicciones.
+            cota: se acotan los datos hasta cierto número de datos.
+    """
+    # Obtener el nombre de los componentes
+    componentes = datos_originales.keys()
+
+    # Diccionario para almacenar los resultados
+    d_rmse = {}
+    d_mape = {}
+    d_ds = {}
+
+    # la cota específica hasta que datos se tomarán en cuenta para la evaluación. Su valor por defecto es la cantidad de datos totales.
+    cota=len(datos_originales[list(datos_originales)[0]]) if cota == -1 else cota
+
+    # Iterar sobre las llaves de los diccionarios
+    for componente in componentes:
+        # Generar el texto de la clave para rmse
+        clave = f'Reconstrucción de {componente}' if componente == list(componentes)[0] else f'Componente {componente}'
+        d_rmse[clave] = rmse(datos_originales[componente][:cota], prediccion[componente][:cota])
+        d_mape[clave] = mape(datos_originales[componente][:cota], prediccion[componente][:cota])
+        d_ds[clave] = directional_symmetry(datos_originales[componente][:cota], prediccion[componente][:cota])
+
+    # Creamos un DataFrame de Pandas a partir del diccionario de errores
+    # df_errores = pd.DataFrame.from_dict(errores, orient='index', columns=['Error de Predicción'])
+    df_errores = pd.DataFrame({
+        'RMSE': pd.Series(d_rmse),
+        'MAPE': pd.Series(d_mape),
+        'DS': pd.Series(d_ds)
+    })
+
+    return df_errores
+
 
 # def entrena(red,n_red,inputs,t_ent = 8,t_sal = -1):
 #     """

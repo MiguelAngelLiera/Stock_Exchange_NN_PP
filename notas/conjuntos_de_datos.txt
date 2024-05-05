@@ -1,0 +1,36 @@
+# ACTINVRB
+# DATOS = 'datos\_nacionales\entidades financieras\ACTINVRB\_030116_ 311223.csv' 
+# BBAJIOO
+# DATOS = 'datos\_nacionales\entidades financieras\BBAJIOO\_110617_311223.csv'
+# BOLSAA
+# DATOS = 'datos\_nacionales\entidades financieras\BOLSAA\_030116_311223.csv'
+# CREAL
+# DATOS = 'datos\_nacionales\entidades financieras\CREAL\_030116_290522.csv'
+# FINAMEXO (mala calidad de datos)
+# DATOS = 'datos\_nacionales\entidades financieras\FINAMEXO\_130316_270823.csv'
+# FINDEP
+# DATOS = 'datos\_nacionales\entidades financieras\FINDEP\_030116_171223.csv'
+# GBMO
+#DATOS = 'datos\_nacionales\entidades financieras\GBMO\_030116_311223.csv'
+# GENTERA
+# DATOS = 'datos\_nacionales\entidades financieras\GENTERA\_030116_311223.csv'
+# GFINBURO
+# DATOS = 'datos\_nacionales\entidades financieras\GFINBURO\_030116_311223.csv'
+# GFMULTIO (mala calidad de datos)
+#DATOS = 'datos\_nacionales\entidades financieras\GFMULTIO\_070216_130823.csv'
+# GFNORTEO
+# DATOS = 'datos\_nacionales\entidades financieras\GFNORTEO\_030116_311223.csv'
+# GNP
+# DATOS = 'datos\_nacionales\entidades financieras\GNP\_030116_311223.csv'
+# GPROFUT
+# DATOS = 'datos\_nacionales\entidades financieras\GPROFUT\_170116_311223.csv'
+# INVEXA
+# DATOS = 'datos\_nacionales\entidades financieras\INVEXA\_030116_171223.csv'
+# PROCORPB (mala calidad de datos)
+# DATOS = 'datos\_nacionales\entidades financieras\PROCORPB\_210216_241223.csv'
+# PV
+# DATOS = 'datos\_nacionales\entidades financieras\PV\_310116_290522.csv'
+# Q
+#DATOS = 'datos\_nacionales\entidades financieras\Q\_030116_311223.csv'
+# UNIFINA
+#DATOS = 'datos\_nacionales\entidades financieras\UNIFINA\_030116_201122.csv'
