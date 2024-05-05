@@ -1,6 +1,6 @@
 ACTINVRB
 
-DWT-NARNN
+DWT-LSTM
 
 ---Estandar---
 RMSE        MAPE    DS
@@ -23,7 +23,19 @@ Componente D2               0.0000   96.855244  52.0
 Componente D1               0.0882  177.511636  52.0
 
 ---Con Correción---
+NARNN
+RMSE          MAPE    DS
+Precicción de c_prueba  0.1734  9.172826e+13  58.4
 
+LSTM
+RMSE          MAPE    DS
+Precicción de c_prueba  0.1102  2.740306e+14  60.8
+
+GRU
+RMSE          MAPE    DS
+Precicción de c_prueba  0.097  6.687420e+13  60.0
+
+DWT_LSTM
 RMSE          MAPE    DS
 Reconstrucción de c_prueba  0.1101  5.908470e+14  64.8
 Componente A5               0.1152  6.069579e+14  41.6
@@ -32,6 +44,16 @@ Componente D4               0.1924  1.482291e+15  68.0
 Componente D3               0.2046  1.514487e+15  70.4
 Componente D2               0.1624  1.900872e+15  69.6
 Componente D1               0.1678  1.541012e+15  61.6
+
+DWT_GRU
+RMSE          MAPE    DS
+Reconstrucción de c_prueba  0.0940  6.189595e+14  68.0
+Componente A5               0.0967  6.271621e+14  44.8
+Componente D5               0.2703  1.900960e+15  36.8
+Componente D4               0.2592  1.640861e+15  63.2
+Componente D3               0.2223  1.181794e+15  67.2
+Componente D2               0.1762  2.091720e+15  68.8
+Componente D1               0.1619  1.430552e+15  60.0
 
 BBAJIOO
 
@@ -49,11 +71,20 @@ Componente D2               0.2029  2.286201e+15  64.0777
 Componente D1               0.1404  2.291422e+14  71.8447
 
 BOLSAA
+---Con Correción---
+NARNN
+RMSE          MAPE       DS
+Precicción de c_prueba  0.3025  1.491861e+15  51.5873
+
+LSTM
+RMSE          MAPE      DS
+Precicción de c_prueba  0.1701  1.116123e+15  47.619
+
+GRU
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1497  1.152429e+15  54.7619
 
 DWT-LSTMnn
-
----Con Correción---
-
 RMSE          MAPE       DS
 Reconstrucción de c_prueba  0.1694  1.243945e+15  57.9365
 Componente A5               0.1695  1.198965e+15  53.9683
@@ -62,6 +93,16 @@ Componente D4               0.1860  1.873047e+15  73.0159
 Componente D3               0.1911  9.357242e+14  60.3175
 Componente D2               0.1952  1.913794e+15  64.2857
 Componente D1               0.1884  1.771739e+15  65.8730
+
+DWT_GRU
+RMSE          MAPE       DS
+Reconstrucción de c_prueba  0.1615  1.247645e+15  57.9365
+Componente A5               0.1612  1.226535e+15  53.9683
+Componente D5               0.3035  2.134212e+15  40.4762
+Componente D4               0.1949  1.602574e+15  73.8095
+Componente D3               0.1968  8.707429e+14  65.0794
+Componente D2               0.2348  1.879897e+15  60.3175
+Componente D1               0.1905  1.735928e+15  59.5238
 
 CREAL
 
@@ -105,9 +146,19 @@ Componente D2               0.2228  8.863791e+14  60.7143
 Componente D1               0.1460  2.779037e+15  64.2857
 
 GBMO
+NARNN
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1765  5.624765e+14  50.9091
+
+GRU
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1262  7.134909e+14  52.7273
+
+LSTM
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1434  2.111871e+15  54.5455
 
 DWT_LSTM
-
 RMSE          MAPE       DS
 Reconstrucción de c_prueba  0.1908  5.859671e+14  63.6364
 Componente A5               0.1978  6.604245e+13  50.9091
@@ -117,10 +168,31 @@ Componente D3               0.1955  2.221661e+15  54.5455
 Componente D2               0.2189  2.147891e+15  71.8182
 Componente D1               0.1038  2.023019e+15  66.3636
 
+DWT_GRU
+RMSE          MAPE       DS
+Reconstrucción de c_prueba  0.1911  6.958058e+14  62.7273
+Componente A5               0.1993  1.074227e+14  43.6364
+Componente D5               0.2731  1.669836e+15  40.9091
+Componente D4               0.2122  1.927532e+15  72.7273
+Componente D3               0.1857  1.672309e+15  65.4545
+Componente D2               0.2474  2.088989e+15  74.5455
+Componente D1               0.1050  1.927722e+15  66.3636
+
 GENTERA
 
-DWT_LSTM
+NARNN
+RMSE          MAPE       DS
+Precicción de c_prueba  0.2254  1.709406e+14  45.2381
 
+LSTM
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1648  3.798769e+14  55.5556
+
+GRU
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1388  2.556221e+14  53.9683
+
+DWT_LSTM
 RMSE          MAPE       DS
 Reconstrucción de c_prueba  0.1694  7.003902e+14  53.1746
 Componente A5               0.1565  7.061210e+14  51.5873
@@ -130,7 +202,25 @@ Componente D3               0.1891  6.509286e+14  65.0794
 Componente D2               0.1681  1.865100e+15  65.0794
 Componente D1               0.1690  1.111606e+14  65.0794
 
+DWT_GRU
+RMSE          MAPE       DS
+Reconstrucción de c_prueba  0.1559  7.424555e+14  54.7619
+Componente A5               0.1420  7.413184e+14  50.0000
+Componente D5               0.2876  3.962680e+15  35.7143
+Componente D4               0.2081  1.809684e+14  64.2857
+Componente D3               0.1982  1.526029e+14  63.4921
+Componente D2               0.1931  2.216689e+15  65.8730
+Componente D1               0.1896  1.307293e+14  64.2857
+
 GFINBURO
+
+LSTM
+RMSE          MAPE       DS
+Precicción de c_prueba  0.172  3.768713e+14  51.5873
+
+GRU
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1459  2.137785e+14  46.8254
 
 DWT_LSTM
 RMSE          MAPE       DS
@@ -141,6 +231,16 @@ Componente D4               0.1925  5.644124e+14  67.4603
 Componente D3               0.2329  5.539173e+14  66.6667
 Componente D2               0.1845  1.887529e+15  60.3175
 Componente D1               0.1401  4.115836e+14  57.9365
+
+DWT_GRU
+RMSE          MAPE       DS
+Reconstrucción de c_prueba  0.1591  8.985872e+14  45.2381
+Componente A5               0.1568  8.924085e+14  47.6190
+Componente D5               0.3197  3.529558e+15  35.7143
+Componente D4               0.1950  2.661092e+14  69.0476
+Componente D3               0.2371  1.012292e+14  66.6667
+Componente D2               0.1968  2.099338e+15  56.3492
+Componente D1               0.1528  1.445519e+14  58.7302
 
 GFMULTIO
 
@@ -156,6 +256,14 @@ Componente D1               0.1304  5.736014e+15  64.1026
 
 GFNORTEO
 
+LSTM
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1984  4.748244e+14  48.4127
+
+GRU
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1731  3.524073e+14  50.7937
+
 DWT_LSTM
 RMSE          MAPE       DS
 Reconstrucción de c_prueba  0.2430  4.132148e+14  57.1429
@@ -166,7 +274,25 @@ Componente D3               0.1830  9.173555e+14  62.6984
 Componente D2               0.1975  1.725159e+15  67.4603
 Componente D1               0.2008  7.501684e+14  71.4286
 
+DWT_GRU
+RMSE          MAPE       DS
+Reconstrucción de c_prueba  0.2331  3.943712e+14  61.1111
+Componente A5               0.2428  6.510886e+14  51.5873
+Componente D5               0.2751  1.272868e+15  31.7460
+Componente D4               0.2076  5.927377e+14  70.6349
+Componente D3               0.1850  8.806737e+14  73.0159
+Componente D2               0.2271  2.085305e+15  65.8730
+Componente D1               0.1947  3.791971e+14  66.6667
+
 GNP
+
+LSTM
+RMSE          MAPE       DS
+Precicción de c_prueba  0.222  1.297693e+15  69.1176
+
+GRU
+RMSE          MAPE       DS
+Precicción de c_prueba  0.2014  9.628401e+14  67.6471
 
 DWT_LSTM
 RMSE          MAPE       DS
@@ -177,6 +303,16 @@ Componente D4               0.1689  4.828720e+15  64.7059
 Componente D3               0.2107  2.112888e+15  70.5882
 Componente D2               0.1673  3.434798e+15  72.0588
 Componente D1               0.2100  3.093959e+15  69.1176
+
+DWT_GRU
+RMSE          MAPE       DS
+Reconstrucción de c_prueba  0.3559  1.431484e+15  69.1176
+Componente A5               0.3351  4.135240e+14  52.9412
+Componente D5               0.2758  1.475375e+15  47.0588
+Componente D4               0.1741  4.569385e+15  63.2353
+Componente D3               0.2373  3.159793e+14  63.2353
+Componente D2               0.1901  3.519700e+15  64.7059
+Componente D1               0.2060  3.061560e+15  73.5294
 
 GPROFUT
 
@@ -228,6 +364,14 @@ Componente D1               0.1992  8.035286e+15  60.7143
 
 Q
 
+LSTM
+RMSE          MAPE      DS
+Precicción de c_prueba  0.1456  4.919025e+14  52.381
+
+GRU
+RMSE          MAPE       DS
+Precicción de c_prueba  0.1242  3.001442e+14  53.1746
+
 DWT_LSTM
  RMSE          MAPE       DS
 Reconstrucción de c_prueba  0.2260  2.581508e+14  55.5556
@@ -237,3 +381,13 @@ Componente D4               0.1893  2.061277e+15  61.1111
 Componente D3               0.1964  2.016082e+15  56.3492
 Componente D2               0.1504  2.537248e+15  61.1111
 Componente D1               0.2394  1.987672e+15  61.1111
+
+DWT_GRU
+RMSE          MAPE       DS
+Reconstrucción de c_prueba  0.2130  2.004173e+14  50.7937
+Componente A5               0.2150  1.722495e+14  58.7302
+Componente D5               0.2342  2.253087e+15  41.2698
+Componente D4               0.1555  1.387577e+15  66.6667
+Componente D3               0.1817  1.891970e+15  70.6349
+Componente D2               0.1704  2.892178e+15  64.2857
+Componente D1               0.2595  2.077589e+15  62.6984
