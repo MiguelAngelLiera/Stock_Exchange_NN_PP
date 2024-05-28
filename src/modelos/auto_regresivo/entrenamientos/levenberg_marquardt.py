@@ -129,23 +129,18 @@ class LM:
     
     def step(self):
         """
-        Paso de la optimización
+        Paso de la optimización del algoritmo LM
         """
-        #print(">>Paso...<<")
-        #concatena los paremetros de la red en un solo vector unidimensional
         x_n = self.aux_convierte_parametros() 
 
         #calculamos la matriz hessiana
         h = torch.autograd.functional.hessian(self.calcula_perdida, x_n) 
-        #print("tamaño de h: " + str(h.shape))
+
         #calculamos el gradiente de la funcion
-        grad_f = torch.autograd.grad(self.calcula_perdida(x_n), x_n)[0] 
-        self.result['grad'] = grad_f
-        self.result['hessian'] = h
+        grad_f = torch.autograd.grad(self.calcula_perdida(x_n), x_n)[0]
 
         # calculamos la transpuesta del gradiente
         grad_f = torch.transpose(torch.unsqueeze(grad_f, 0),0, 1) 
-        #print("tamaño de grad " + str(grad_f.shape))
 
         # multiplica un escalar por la matriz identidad del tamaño de h y se lo sumamos a h
         h_p = h+self.λ*torch.eye(h.size(1))
@@ -154,16 +149,9 @@ class LM:
         #se le da la forma adecuada para que se pueda sumar con el vector de nuevos pesos
         x_n = x_n.reshape(h.size(1), 1)
 
-        #print("x_n antes1: " + str(x_n))
-        #print("x_n1 antes: " + str(x_n1))
-        #print("lr*x_n1 antes: " + str(self.lr*x_n1))
-        #print("parametros de la red: " + str([i for i in self.red.parameters()]))
-        #print("--Pre-Actualización:-- " + str(x_n))
-        x_n = x_n + self.lr*x_n1 #se realiza la actualización a los parametros
-        #print("--Post-Actualización:-- " + str(x_n))
-        #print("transpuesta: " + str(torch.transpose(x_n,0,1)[0]))
+        #se realiza la actualización a los parametros
+        x_n = x_n + self.lr*x_n1 
         return self.asigna_parametros(torch.transpose(x_n,0,1)[0],reasignar=False)
-        #print(">>Fin de paso<<")
         
 
     def asigna_parametros(self,*parametros,reasignar=False):
@@ -217,3 +205,42 @@ class LM:
             return torch.cat([_.view(-1) for _ in self.red.parameters()], dim = 0)
         else:
             return torch.cat([_.view(-1) for _ in n_params], dim = 0)
+        
+
+# def step(self):
+#         """
+#         Paso de la optimización
+#         """
+#         #print(">>Paso...<<")
+#         #concatena los paremetros de la red en un solo vector unidimensional
+#         x_n = self.aux_convierte_parametros() 
+
+#         #calculamos la matriz hessiana
+#         h = torch.autograd.functional.hessian(self.calcula_perdida, x_n) 
+#         #print("tamaño de h: " + str(h.shape))
+#         #calculamos el gradiente de la funcion
+#         grad_f = torch.autograd.grad(self.calcula_perdida(x_n), x_n)[0] 
+#         self.result['grad'] = grad_f
+#         self.result['hessian'] = h
+
+#         # calculamos la transpuesta del gradiente
+#         grad_f = torch.transpose(torch.unsqueeze(grad_f, 0),0, 1) 
+#         #print("tamaño de grad " + str(grad_f.shape))
+
+#         # multiplica un escalar por la matriz identidad del tamaño de h y se lo sumamos a h
+#         h_p = h+self.λ*torch.eye(h.size(1))
+#         #producto punto entre - la inversa de h_p y el gradiente de la red
+#         x_n1 = torch.matmul(-torch.inverse(h_p),grad_f) 
+#         #se le da la forma adecuada para que se pueda sumar con el vector de nuevos pesos
+#         x_n = x_n.reshape(h.size(1), 1)
+
+#         #print("x_n antes1: " + str(x_n))
+#         #print("x_n1 antes: " + str(x_n1))
+#         #print("lr*x_n1 antes: " + str(self.lr*x_n1))
+#         #print("parametros de la red: " + str([i for i in self.red.parameters()]))
+#         #print("--Pre-Actualización:-- " + str(x_n))
+#         x_n = x_n + self.lr*x_n1 #se realiza la actualización a los parametros
+#         #print("--Post-Actualización:-- " + str(x_n))
+#         #print("transpuesta: " + str(torch.transpose(x_n,0,1)[0]))
+#         return self.asigna_parametros(torch.transpose(x_n,0,1)[0],reasignar=False)
+#         #print(">>Fin de paso<<")
