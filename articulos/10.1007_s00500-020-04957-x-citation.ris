@@ -1,0 +1,19 @@
+TY  - JOUR
+AU  - Parray, Irfan Ramzan
+AU  - Khurana, Surinder Singh
+AU  - Kumar, Munish
+AU  - Altalbe, Ali A.
+PY  - 2020
+DA  - 2020/11/01
+TI  - Time series data analysis of stock price movement using machine learning techniques
+JO  - Soft Computing
+SP  - 16509
+EP  - 16517
+VL  - 24
+IS  - 21
+AB  - Stock market also called as equity market is the aggregation of the sellers and buyers. It is concerned with the domain where the shares of various public listed companies are traded. For predicting the growth of economy, stock market acts as an index. Due to the nonlinear nature, the prediction of the stock market becomes a difficult task. But the application of various machine learning techniques has been becoming a powerful source for the prediction. These techniques employ historical data of the stocks for the training of machine learning algorithms and help in predicting their future behavior. The three machine learning algorithms used in this paper are support vector machine, perceptron, and logistic regression, for predicting the next day trend of the stocks. For the experiment, dataset from about fifty stocks of Indian National Stock Exchange’s NIFTY 50 index was taken, by collecting stock data from January 1, 2013, to December 31, 2018, and lastly by the calculation of some technical indicators. It is reported that the average accuracy for the prediction of the trend of fifty stocks obtained by support vector machine is 87.35%, perceptron is 75.88%, and logistic regression is 86.98%. Since the stock data are time series data, another dataset is prepared by reorganizing previous dataset into the supervised learning format which improves the accuracy of the prediction process which reported the results with support vector machine of 89.93%, perceptron of 76.68%, and logistic regression of 89.93%, respectively.
+SN  - 1433-7479
+UR  - https://doi.org/10.1007/s00500-020-04957-x
+DO  - 10.1007/s00500-020-04957-x
+ID  - Parray2020
+ER  - 
