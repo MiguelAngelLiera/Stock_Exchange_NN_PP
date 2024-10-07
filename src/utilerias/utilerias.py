@@ -28,6 +28,30 @@ def rmse(y_true, y_pred):
     #return round(np.sqrt(np.mean((y_true - y_pred) ** 2)),8)
     return round(np.sqrt(mean_squared_error(y_true,y_pred)),4)
 
+def mse_elemental(y_true, y_pred):
+  """
+  Calcula el error cuadrático medio (MSE) elemento a elemento entre dos listas.
+
+  Args:
+    y_true: valores originales.
+    y_pred: valores predichos.
+
+  Returns:
+    Un arreglo numpy con los errores cuadráticos medios elemento a elemento.
+  """
+
+  if len(y_true) != len(y_pred):
+    raise ValueError("Las listas deben tener la misma longitud")
+
+  # Convertir las listas a arreglos de NumPy
+  y_true = np.array(y_true)
+  y_pred = np.array(y_pred)
+
+  # Calcular las diferencias al cuadrado
+  diferencias_cuadradas = (y_true - y_pred)**2
+
+  return diferencias_cuadradas
+
 def mape(y_true, y_pred):
     """
     Calcula el mean absolute percentage error (MAPE)
