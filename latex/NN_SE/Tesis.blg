@@ -1,0 +1,51 @@
+This is BibTeX, Version 0.99d
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: Tesis.aux
+Reallocating 'name_of_file' (item size: 1) to 9 items.
+The style file: unsrtnat.bst
+Reallocating 'name_of_file' (item size: 1) to 13 items.
+Database file #1: Bibliografia.bib
+Warning--empty publisher in ten_lec_wavelets_Daubechies_1
+Warning--empty year in LSTM_fbp_calc_grad_Mallya
+You've used 32 entries,
+            2481 wiz_defined-function locations,
+            777 strings with 11346 characters,
+and the built_in function-call counts, 11382 in all, are:
+= -- 1013
+> -- 498
+< -- 25
++ -- 208
+- -- 144
+* -- 797
+:= -- 1834
+add.period$ -- 131
+call.type$ -- 32
+change.case$ -- 62
+chr.to.int$ -- 32
+cite$ -- 34
+duplicate$ -- 566
+empty$ -- 1076
+format.name$ -- 190
+if$ -- 2445
+int.to.chr$ -- 1
+int.to.str$ -- 33
+missing$ -- 24
+newline$ -- 202
+num.names$ -- 98
+pop$ -- 274
+preamble$ -- 1
+purify$ -- 32
+quote$ -- 0
+skip$ -- 363
+stack$ -- 0
+substring$ -- 400
+swap$ -- 83
+text.length$ -- 2
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 215
+warning$ -- 2
+while$ -- 89
+width$ -- 0
+write$ -- 476
+(There were 2 warnings)

@@ -1,0 +1,15 @@
+% !TEX root = ../Tesis.tex
+\chapter{Introducción} % Write in your own chapter title
+\label{cap:intro} % para hacer referencia cruzada en el mismo documento con \ref{cap:intro}
+
+%Aquí comenzamos \citep{Reference3}.
+
+%Por si no las citamos, pero queremos que aparezcan usar \texttt{nocite} \nocite{Reference1}.  Bla bla bla bla bla.
+
+El saber cómo cambiará el precio de una acción a futuro, el poder conocer qué momento es ideal para realizar una transacción impacta directamente no solo en las decisiones que un inversionista tomará al comprar o vender o en los beneficios que el futuro propietario tendrá con su compra, si no en la planificación de estrategias financieras complejas de empresas que buscan maximizar sus ganancias. Sin embargo el mercado bursátil se caracteriza por su alta volatilidad, y es bien sabido el hecho de que éste se ve afectado por factores no solo económicos sino sociales, políticos y culturales. Es precisamente por este complejo reto por el cual en el campo de la inteligencia artificial es de especial interés el poder predecir el comportamiento de fenómenos bursátiles, pues representan un conjunto de datos no lineales, que más bien se puede modelar como un fenómeno aleatorio que pone a prueba las técnicas del pronóstico de datos.
+
+En este sentido, las redes neuronales son una herramienta popular entre los investigadores a la hora de atacar este tipo de problemas. Se tratan de modelos matemáticos que tienen la capacidad de adaptarse a cierto tipo de datos mediante un entrenamiento, bien conocidas en la actualidad por sus aplicaciones en el reconocimiento de patrones, teniendo como entrada la voz, texto o cualquier conjunto de datos.
+
+Aunado a esto, podemos encontrar en la literatura el uso de técnicas de pre-procesamiento de datos para la limpieza de datos. Esto nos es especialmente útil desde que podemos encontrar patrones que a priori parecen desdibujados, además de darle a los modelos de aprendizaje un conjunto con el que pueden trabajar de manera más eficiente.
+
+Así, el objetivo de este trabajo es crear, evaluar y comparar el desempeño de algunas arquitecturas de redes neuronales en conjunto de la técnica de la transformada de ondículas para encontrar el modelo que ofrezca mejores resultados durante la predicción de los precios de las acciones de entidades financieras que se encuentren listadas en la Bolsa Mexicana de Valores. Se toma la cotización de cierre semanal en un periodo de cinco años. Para todos los modelos, se toma una entrada de ocho semanas para obtener el precio de una novena semana, y se hace un corrimiento de un día para seguir con la predicción. Se realizan diferentes pruebas de pronóstico (por reforzamiento, auto-predictivo y auto-predictivo con correción) y así obtener una comparativa y obtener un modelo definitivo para el análisis.

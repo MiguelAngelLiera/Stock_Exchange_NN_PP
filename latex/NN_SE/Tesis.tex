@@ -1,0 +1,198 @@
+%% ----------------------------------------------------------------
+%% Tesis.tex -- Archivo principal
+%% ---------------------------------------------------------------- 
+
+% Asignar el documento
+\documentclass[letterpaper, 12pt, twoside]{TesisUNAM}  % Usa el tipo de documento "ThesisUNAM"
+
+% Include any extra LaTeX packages required
+\usepackage[square, numbers, comma, sort&compress]{natbib}  % Use the "Natbib" style for the references in the Bibliography
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{listings} % para escribir código
+\usepackage{xcolor}
+\usepackage[spanish]{babel}
+%\usepackage{algorithm}
+%\usepackage{algpseudocode}
+\usepackage[ruled,vlined,linesnumbered,spanish,onelanguage]{algorithm2e}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float} % Necesario para la opción H
+\usepackage{longtable}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\title{Análisis de Modelos de Redes Neuronales en la predicción de precios de las acciones en la BMV}
+\author{Miguel Angel Liera Montaño}
+\modalidad{T E S I S}
+\tituloprofesional{Licenciado en Ciencias de la Computación}
+\facultad{Facultad de Ciencias}
+\escudofacultad{EscudoFCiencias}
+\supervisor{Dra. Verónica Esther Arriola Ríos}
+
+\begin{document}
+\frontmatter	  % Begin Roman style (i, ii, iii, iv...) page numbering
+\maketitle
+
+% Si numeración ni encabezados
+\pagestyle{empty}
+
+% Dedicatoria
+\dedicatory{A Thayla, Andrea y Alicia}
+
+% Agradecimientos
+\acknowledgements{
+    Quisiera experesar mis más profundos agradecimientos a la Dra. Arriola Ríos
+    , mi asesora, quien fue mi guía y gracias a su experiencia, conocimiento y paciencia pude completar esta trabajo. También a mis sinodales, el Dr. en Lingüística Mijangos de la Cruz, el M. en C. Hernández López, la Dra. Naranjo Albarrán y al M. en I. Torres Bello quienes con su saber y apoyo me ayudaron a enriquecer el presente proyecto. Mi especial gratitud a Dra. Gasca Soto por motivarme a seguir con este.
+
+    A mi hermana Andrea agradezco su apoyo y amor, sin el cuál no podría haberme convertido en la persona que soy hoy, a mi sobrina Thayla por su alegría que me motiva a seguir y a mis padres Lilian y Luis por su soporte. A Alicia, mi novia, por su enorme amor durante todo este tiempo.
+
+    Muchas gracias a todos mis compañeros y amigos, especialmente a Angel Peña, a quien agradezco por haber elegido la profesión cientifica. A Gerardo Martinez, Oswaldo Sanchez y Victor Cuevas quienes han estado presentes en mi vida desde la escuela preparatoria y me han acompañado en este proceso. A Natalia quien agradezco su cariño durante mis estudios. A Fausto Hernandez, Rodrigo Arévalo, Santiago Arrollo, Diana Hernández y Berenice Calvario por su hermandad durante estos últimos años. 
+ %Los agradecimientos van aquí\ldots
+ 
+ %Para quitar los marcos alrededor de la página comentar la línea 117 en TesisUNAM.cls que dice \textit{$\backslash$usepackage\{showframe\}}.
+}
+
+% Inicia el contedio
+\pagestyle{fancy} 
+
+%% ----------------------------------------------------------------
+\tableofcontents  % Write out the Table of Contents
+
+%% ----------------------------------------------------------------
+\listoffigures  % Write out the List of Figures
+
+%% ----------------------------------------------------------------
+\listoftables  % Write out the List of Tables
+
+%% ----------------------------------------------------------------
+\setstretch{1.5}  % Set the line spacing to 1.5, this makes the following tables easier to read
+\clearpage  % Start a new page
+\listofsymbols{ll}  % Include a list of Abbreviations (a table of two columns)
+{
+% \textbf{Acronym} & \textbf{W}hat (it) \textbf{S}tands \textbf{F}or \\
+\textbf{FT} & \textbf{F}ourier \textbf{T}ransform \\
+\textbf{STFT} & \textbf{S}hort \textbf{T}ime \textbf{F}ourier \textbf{T}ransform\\
+\textbf{WFT} & \textbf{W}indowed \textbf{F}ourier \textbf{T}ransform\\
+\textbf{WT} & \textbf{W}avelet \textbf{T}ransform\\
+\textbf{CWT} & \textbf{C}ontinous \textbf{W}avelet \textbf{T}ransform\\
+\textbf{DWT} & \textbf{D}iscrete \textbf{W}avelet \textbf{T}ransform\\
+\textbf{ANNs} & \textbf{A}rtificial \textbf{N}eural \textbf{N}etworks\\
+\textbf{ARIMA} & \textbf{A}utoregressive \textbf{I}ntegrated \textbf{M}oving \textbf{A}verage\\
+\textbf{ARMA} & \textbf{A}utoregressive \textbf{M}oving \textbf{A}verage\\
+\textbf{SVMs} & \textbf{S}upport \textbf{V}ector \textbf{M}achines\\
+\textbf{MSE} & \textbf{M}ean \textbf{S}quare \textbf{E}rror\\
+\textbf{MAE} & \textbf{M}ean \textbf{A}bsolute \textbf{E}rror\\
+\textbf{GD} & \textbf{G}radient \textbf{D}escent\\
+\textbf{SGD} & \textbf{S}tochastic \textbf{G}radient \textbf{D}escent\\
+\textbf{ADAM} & \textbf{A}daptative \textbf{M}oment \textbf{E}stimation\\
+\textbf{LM} & \textbf{L}evenberg-\textbf{M}arquardt\\
+\textbf{NARNNs} & \textbf{N}ot linear
+\textbf{A}utorregresive \textbf{N}eural \textbf{N}etworks\\
+\textbf{RNNs} & \textbf{R}ecurretn \textbf{N}eural \textbf{N}etworks\\
+\textbf{RMLP} & \textbf{R}ecurrent \textbf{M}ulti\textbf{L}ayer \textbf{Perceptron}\\
+\textbf{LSTM} & \textbf{L}ong \textbf{S}hort-\textbf{T}erm \textbf{Memory}\\
+\textbf{GRU} & \textbf{G}ated \textbf{R}ecurrent \textbf{U}nit\\
+\textbf{LTR} & \textbf{L}inea de \textbf{T}iempo \textbf{R}etrasado\\
+\textbf{RMSE} & \textbf{R}ooted \textbf{M}ean \textbf{S}quared \textbf{E}rror\\
+\textbf{MAPE} & \textbf{M}ean \textbf{A}verage \textbf{P}ercentage \textbf{E}rror\\
+\textbf{DS} & \textbf{D}irectional \textbf{S}ymmetry\\
+\textbf{FD} & \textbf{F}actor de \textbf{D}ecaimiento\\
+\textbf{GNNs} & \textbf{Graph} \textbf{Neural} \textbf{Networks}\\
+}
+
+%% ----------------------------------------------------------------
+%\clearpage  % Start a new page
+%\listofconstants{lrcl}  % Include a list of Physical Constants (a four column table)
+%{
+% Constant Name & Symbol & = & Constant Value (with units) \\
+%Speed of Light & $c$ & $=$ & $2.997\ 924\ 58\times10^{8}\ \mbox{ms}^{-\mbox{s}}$ (exact)\\
+
+%}
+
+%% ----------------------------------------------------------------
+%\clearpage  %Start a new page
+%\listofnomenclature{lll}  % Include a list of Symbols (a three column table)
+%{
+% symbol & name & unit \\
+%a$ & distance & m \\
+%$P$ & power & W (Js$^{-1}$) \\
+%& & \\ % Gap to separate the Roman symbols from the Greek
+%$\omega$ & angular frequency & rads$^{-1}$ \\
+%}
+
+
+
+\mainmatter	  % Begin normal, numeric (1,2,3...) page numbering
+\pagestyle{fancy}  % Return the page headers back to the "fancy" style
+%\doublespacing  % Set the line spacing to 2.0, as requested by the guide notes
+\singlespacing
+
+
+\setchapterhead
+
+% Include the chapters of the thesis, as separate files
+% Just uncomment the lines as you write the chapters
+
+\input{./Capitulos/Intro} % Introduction
+
+\input{./Capitulos/Descomposicion_de_seniales} % Background Theory 
+
+\input{./Capitulos/RN_series_tiempo} % Experimental Setup
+
+\input{./Capitulos/Construccion_del_modelo} % Experiment 1
+
+\input{./Capitulos/Proceso_de_entrenamiento} % Experiment 2
+
+\input{./Capitulos/Evaluacion_de_desempenio} % Results and Discussion
+
+\input{./Capitulos/Conclusiones} % Conclusion
+
+%% ----------------------------------------------------------------
+% Now begin the Appendices, including them as separate files
+
+\addtocontents{toc}{\vspace{2em}} % Add a gap in the Contents, for aesthetics
+
+\appendix % Cue to tell LaTeX that the following 'chapters' are Appendices
+
+\input{./Apendices/ApendiceA}	% Appendix Title
+
+\input{./Apendices/ApendiceB} % Appendix Title
+
+\input{./Apendices/ApendiceC} % Appendix Title
+
+\addtocontents{toc}{\vspace{2em}}  % Add a gap in the Contents, for aesthetics
+\backmatter
+
+%% ----------------------------------------------------------------
+\label{Bibliography}
+\setstretch{1} % Less spacing is accepted for the items in the bibliography.
+\lhead{\emph{Bibliografía}}  % Change the left side page header to "Bibliography"
+\bibliographystyle{unsrtnat}  % Use the "unsrtnat" BibTeX style for formatting the Bibliography
+\bibliography{Bibliografia}  % The references (bibliography) information are stored in the file named "Bibliography.bib"
+
+\end{document}

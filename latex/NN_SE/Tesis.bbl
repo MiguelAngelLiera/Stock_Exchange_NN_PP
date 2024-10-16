@@ -1,0 +1,246 @@
+\begin{thebibliography}{32}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Daubechies(1992)]{ten_lec_wavelets_Daubechies_1}
+Ingrid Daubechies.
+\newblock \emph{1. The What, Why, and How of Wavelets}, pages 1--16.
+\newblock 1992.
+\newblock \doi{10.1137/1.9781611970104.ch1}.
+\newblock URL \url{https://epubs.siam.org/doi/abs/10.1137/1.9781611970104.ch1}.
+
+\bibitem[Graps(1995)]{an_introduction_to_wavelets}
+Amara Graps.
+\newblock An introduction to wavelets.
+\newblock \emph{IEEE Computational Science and Engineering}, 2\penalty0
+  (2):\penalty0 50--61, 1995.
+\newblock \doi{10.1109/99.388960}.
+
+\bibitem[Colah(2015)]{understanding_lstm_Olah}
+Christopher Colah.
+\newblock Understanding lstm networks.
+\newblock colah's blog, 2015.
+\newblock URL
+  \url{https://colah.github.io/posts/2015-08-Understanding-LSTMs/?source=post_page-----b3996e6a0296--------------------------------}.
+
+\bibitem[Fathi et~al.(2023)Fathi, El-Khodary1, and Saafan]{DWT-NARNN}
+Asmaa~Y. Fathi, Ihab~A. El-Khodary1, and Muhammad Saafan.
+\newblock A hybrid model combining discrete wavelet transform and nonlinear
+  autoregressive neural network for stock price prediction: An application in
+  the egyptian exchange.
+\newblock \emph{Revue d'Intelligence Artificielle}, 37\penalty0 (1):\penalty0
+  15--21, 2 2023.
+\newblock \doi{10.18280/ria.370103}.
+
+\bibitem[Ahmadizadeh(2014)]{STFT}
+M~Ahmadizadeh.
+\newblock An introduction to short-time fourier transform (stft), 2014.
+\newblock URL
+  \url{https://sharif.edu/~ahmadizadeh/courses/advstdyn/Short-Time%20Fourier%20Transform.pdf}.
+\newblock Sharif University of Technology.
+
+\bibitem[Polikar(1999)]{wavalet_tutorial_Polizar}
+Robi Polikar.
+\newblock The wavelet tutorial. part iv. multiresolution analysis: The discrete
+  wavelet transform, 1999.
+\newblock URL
+  \url{https://web.archive.org/web/20180430090402/http://users.rowan.edu/~polikar/WAVELETS/WTtutorial.html}.
+
+\bibitem[Mallat(1989)]{mulresolution_sigmal_desc_DWT_Mallat}
+S.~G. Mallat.
+\newblock A theory for multiresolution signal decomposition: The wavelet
+  representation.
+\newblock \emph{IEEE Transactions on Pattern Analysis and Machine
+  Intelligence}, 11\penalty0 (7):\penalty0 674--693, 1989.
+\newblock \doi{10.1109/34.192463}.
+
+\bibitem[Pra(2020)]{Marco_TSF_Att}
+Marco~Del Pra.
+\newblock Time series forecasting with deep learning and attention mechanism.
+\newblock Medium, 11 2020.
+\newblock URL
+  \url{https://towardsdatascience.com/time-series-forecasting-with-deep-learning-and-attention-mechanism-2d001fc871fc}.
+
+\bibitem[Oancea and Ciucu(2014)]{CorrOancea2014}
+Bogdan Oancea and Stefan~Cristian Ciucu.
+\newblock Time series forecasting using neural networks.
+\newblock \emph{CoRR}, abs/1401.1333, 2014.
+\newblock URL \url{http://arxiv.org/abs/1401.1333}.
+
+\bibitem[Chujai et~al.(2013)Chujai, Kerdprasop, and
+  Kerdprasop]{electric_ARMA_ARIMA}
+Pasapitch Chujai, Nittaya Kerdprasop, and Kittisak Kerdprasop.
+\newblock Time series analysis of household electric consumption with arima and
+  arma models.
+\newblock \emph{Lecture Notes in Engineering and Computer Science},
+  2202:\penalty0 295--300, 03 2013.
+
+\bibitem[Altay and Satman(2005)]{altay2005stock}
+Ece Altay and Mehmet~H. Satman.
+\newblock Stock market forecasting: Artificial neural network and linear
+  regression comparison in an emerging market.
+\newblock \emph{Journal of Financial Management \& Analysis}, 18\penalty0
+  (2):\penalty0 18--33, 2005.
+
+\bibitem[Yang and Wang(2022)]{YANG202218_SVM1}
+Mo~Yang and Jing Wang.
+\newblock Adaptability of financial time series prediction based on bilstm.
+\newblock \emph{Procedia Computer Science}, 199:\penalty0 18--25, 2022.
+\newblock ISSN 1877-0509.
+\newblock \doi{https://doi.org/10.1016/j.procs.2022.01.003}.
+\newblock URL
+  \url{https://www.sciencedirect.com/science/article/pii/S1877050922000035}.
+\newblock The 8th International Conference on Information Technology and
+  Quantitative Management (ITQM 2020 \& 2021): Developing Global Digital
+  Economy after COVID-19.
+
+\bibitem[Parray et~al.(2020)Parray, Khurana, Kumar, and
+  Altalbe]{parray2020time}
+I.~R. Parray, S.~S. Khurana, M.~Kumar, and A.~A. Altalbe.
+\newblock Time series data analysis of stock price movement using machine
+  learning techniques.
+\newblock \emph{Soft Computing}, 24:\penalty0 16509--16517, 2020.
+\newblock \doi{10.1007/s00500-020-04957-x}.
+\newblock URL \url{http://dx.doi.org/10.1007/s00500-020-04957-x}.
+
+\bibitem[Nabipour et~al.(2020)Nabipour, Nayyeri, Jabani, Mosavi, Salwana, and
+  S.]{arboles1}
+M.~Nabipour, P.~Nayyeri, H.~Jabani, A.~Mosavi, E.~Salwana, and Shahab S.
+\newblock Deep learning for stock market prediction.
+\newblock \emph{Entropy}, 22\penalty0 (8), 2020.
+\newblock ISSN 1099-4300.
+\newblock \doi{10.3390/e22080840}.
+\newblock URL \url{https://www.mdpi.com/1099-4300/22/8/840}.
+
+\bibitem[Khan et~al.(2020)Khan, Malik, Ghazanfar, Azam, Alyoubi, and
+  Alfakeeh]{khan2020predicting_randomforest22}
+Wasiat Khan, Usman Malik, Mustansar~Ali Ghazanfar, Muhammad~Awais Azam,
+  Khaled~H. Alyoubi, and Ahmed~S. Alfakeeh.
+\newblock Predicting stock market trends using machine learning algorithms via
+  public sentiment and political situation analysis.
+\newblock \emph{Soft Computing}, 24:\penalty0 11019--11043, 2020.
+\newblock \doi{10.1007/s00500-019-04347-y}.
+\newblock URL \url{https://doi.org/10.1007/s00500-019-04347-y}.
+
+\bibitem[Naik and Mohan(2019)]{randomforest1}
+Nagaraj Naik and Biju~R. Mohan.
+\newblock Stock price movements classification using machine and deep learning
+  techniques-the case study of indian stock market.
+\newblock In John Macintyre, Lazaros Iliadis, Ilias Maglogiannis, and Chrisina
+  Jayne, editors, \emph{Engineering Applications of Neural Networks}, pages
+  445--452, Cham, 2019. Springer International Publishing.
+\newblock ISBN 978-3-030-20257-6.
+
+\bibitem[Kostadinov(2019)]{understanding_backpropagation_Kostadinov}
+Simeon Kostadinov.
+\newblock Understanding backpropagation algorithm.
+\newblock Medium, 2019.
+\newblock URL
+  \url{https://towardsdatascience.com/understanding-backpropagation-algorithm-7bb3aa2f95fd}.
+
+\bibitem[Haykin(2008)]{haykin2008neural}
+Simon Haykin.
+\newblock \emph{Neural Networks and Learning Machines}.
+\newblock Prentice Hall, 3rd edition, 2008.
+
+\bibitem[Hertz et~al.(1991)Hertz, Palmer, and Krogh]{hertz1991introduction}
+John~A. Hertz, Richard~G. Palmer, and Anders Krogh.
+\newblock \emph{Introduction to the Theory of Neural Computation}.
+\newblock Addison Wesley, 1991.
+
+\bibitem[Kingma and Ba(2017)]{adam_kingma}
+Diederik~P. Kingma and Jimmy Ba.
+\newblock Adam: A method for stochastic optimization, 2017.
+
+\bibitem[Hochreiter and Schmidhuber(1997)]{LSTM}
+Sepp Hochreiter and Jürgen Schmidhuber.
+\newblock Long short-term memory.
+\newblock \emph{Neural Computation}, 9\penalty0 (8):\penalty0 1735--1780, 1997.
+\newblock \doi{10.1162/neco.1997.9.8.1735}.
+
+\bibitem[Rahuljha(2020)]{LSTM_gradients_Rahuljha}
+Rahuljha.
+\newblock Lstm gradients: Detailed mathematical derivation of gradients for
+  lstm cells.
+\newblock Medium, 2020.
+\newblock URL \url{https://towardsdatascience.com/lstm-gradients-b3996e6a0296}.
+
+\bibitem[Mallya()]{LSTM_fbp_calc_grad_Mallya}
+Arun Mallya.
+\newblock Lstm forward and backward pass.
+\newblock Medium.
+\newblock URL \url{https://arunmallya.github.io/writeups/nn/lstm/index.html#/}.
+
+\bibitem[Cho et~al.(2014)Cho, van Merrienboer, Gulcehre, Bahdanau,
+  Fethi~Bougares, and Bengio]{GRU}
+Kyunghyun Cho, Bart van Merrienboer, Caglar Gulcehre, Dzmitry Bahdanau,
+  Holger~Schwenk Fethi~Bougares, and Yoshua Bengio.
+\newblock Learning phrase representations using rnn encoder-decoder for
+  statistical machine translation.
+\newblock \emph{Association for Computational Linguistics}, 2014.
+
+\bibitem[Fichou(2023)]{GRU_units_in_R_Fichou}
+Dimitri Fichou.
+\newblock Gru units.
+\newblock The Comprehensive R Archive Network, 2023.
+\newblock URL
+  \url{https://cran.r-project.org/web/packages/rnn/vignettes/GRU_units.html}.
+
+\bibitem[Mihir(2019)]{forward_and_Backprop_GRU_Mihir}
+Mihir.
+\newblock Forward and backpropagation in grus — derived $|$ deep learning.
+\newblock Medium, 2019.
+\newblock URL
+  \url{https://medium.com/@mihirkhandekar/forward-and-backpropagation-in-grus-derived-deep-learning-5764f374f3f5}.
+
+\bibitem[Adusumilli(2019)]{ML_SP}
+Roshan Adusumilli.
+\newblock Machine learning to predict stock prices.
+\newblock \emph{Towards Data Science}, 2019.
+\newblock URL
+  \url{https://towardsdatascience.com/predicting-stock-prices-using-a-keras-lstm-model-4225457f0233}.
+
+\bibitem[Tejeda(2020)]{oportunidades_Actinver}
+Claudia Tejeda.
+\newblock Existen oportunidades en bolsa, dice actinver.
+\newblock El Economista, 9 2020.
+\newblock URL
+  \url{https://www.eleconomista.com.mx/mercados/Existen-oportunidades-en-Bolsa-dice-Activer-20200924-0115.html}.
+
+\bibitem[Lee et~al.(2019)Lee, Gommers, Waselewski, KaiWohlfahrt, and
+  O’Leary]{pywavelets}
+Gregory~R. Lee, Ralf Gommers, Filip Waselewski, KaiWohlfahrt, and Aaron
+  O’Leary.
+\newblock Pywavelets: A python package for wavelet analysis.
+\newblock \emph{Journal of Open Source Software}, 4\penalty0 (36):\penalty0
+  1237, 2019.
+\newblock \doi{10.21105/joss.01237}.
+\newblock URL \url{https://doi.org/10.21105/joss.01237}.
+
+\bibitem[Hassani and Silva(2015)]{kolmogorov}
+Hossein Hassani and Emmanuel Silva.
+\newblock A kolmogorov-smirnov based test for comparing the predictive accuracy
+  of two sets of forecasts.
+\newblock \emph{Econometrics}, 3:\penalty0 590--609, 08 2015.
+\newblock \doi{10.3390/econometrics3030590}.
+
+\bibitem[Srivatsavaya(2023)]{GRU_vs_LSTM}
+Prudhviraju Srivatsavaya.
+\newblock Lstm vs gru.
+\newblock \emph{Towards Data Science}, 2023.
+\newblock URL
+  \url{https://medium.com/@prudhviraju.srivatsavaya/lstm-vs-gru-c1209b8ecb5a}.
+
+\bibitem[Li et~al.(2022)Li, Wang, Tan, et~al.]{graphNN}
+Xiao Li, Jian Wang, Jie Tan, et~al.
+\newblock A graph neural network-based stock forecasting method utilizing
+  multi-source heterogeneous data fusion.
+\newblock \emph{Multimedia Tools and Applications}, 81:\penalty0 43753--43775,
+  2022.
+\newblock \doi{10.1007/s11042-022-13231-1}.
+\newblock URL \url{https://doi.org/10.1007/s11042-022-13231-1}.
+
+\end{thebibliography}

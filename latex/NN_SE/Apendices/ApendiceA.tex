@@ -1,0 +1,21 @@
+% !TEX root = ../Tesis.tex
+\chapter{Desarrollo del gradiente \texorpdfstring{$o_t$}{ot} y \texorpdfstring{$a_o$}{ao}}
+\label{ApA}
+
+Para $o_t$:
+
+$\dfrac{E}{o_t} = \dfrac{\partial E}{\partial h_t} \cdot \dfrac{\partial h_t}{\partial o_t}$, por regla de la cadena
+
+$\Longrightarrow \dfrac{E}{o_t} = \dfrac{\partial E}{\partial h_t} \cdot \dfrac{\partial}{\partial o_t} (o_t \cdot \tanh(c_t))$, sustituyendo el valor de $h_t$
+
+$\Longrightarrow \dfrac{E}{o_t} = \dfrac{\partial E}{\partial h_t} \cdot \tanh(c_t)$
+
+Y para $a_o$:
+
+$\dfrac{E}{\partial a_o} = \dfrac{\partial E}{\partial o_t} \cdot \dfrac{\partial o_t}{\partial a_o}$
+
+$\Longrightarrow \dfrac{E}{\partial a_o} = \dfrac{\partial E}{\partial o_t} \cdot \dfrac{\partial}{\partial a_o} (\sigma (a_o))$
+
+$\Longrightarrow \dfrac{E}{\partial a_o} = \dfrac{\partial E}{\partial o_t} \cdot \sigma (a_o)(1-\sigma(a_o)$
+
+$\Longrightarrow \dfrac{E}{\partial a_o} = \dfrac{\partial E}{\partial h_t} \cdot \tanh(c_t) \cdot o_t(1-o_t)$ 

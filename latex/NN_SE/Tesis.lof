@@ -1,0 +1,84 @@
+\babel@toc {spanish}{}\relax 
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces La Transformada de Fourier de Tiempo Reducido: la función $f(t)$ es multiplicada con la función $g(t)$, obteniendo $f(t)g(t)$, repitiendo este proceso para $g(t-t_0)$, $g(t-2t_0)$ (Imagen recuperada de \cite {ten_lec_wavelets_Daubechies_1}).}}{4}{figure.10}%
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Plano de frecuencia contra tiempo: la manera en cómo actúa la transformación es la misma para cada ventana de tiempo, pues su tamaño es fijo e invariable para analizar cualquier frecuencia alta o baja (Recuperado de \cite {an_introduction_to_wavelets}).}}{6}{figure.13}%
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Plano de frecuencia contra tiempo: a diferencia de la TFTR, la CWT encuentra en la ampliación o compresión de $\psi ^{a,b}$ la capacidad para realizar un análisis frecuencial adecuado en cada caso (Recuperado de \cite {an_introduction_to_wavelets}).}}{7}{figure.16}%
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Ejemplos de funciones de ondículas madre: Los momentos de desaparición (que se ven reflejados por el número al lado del nombre de la ondícula) se refieren a la capacidad de una ondícula para \textit {desvanecerse} al ser integrada con polinomios de cierto grado. En términos simples, si una ondícula tiene n momentos de desaparición, esto implica que el área bajo la ondícula multiplicada por un polinomio de grado n (o inferior) es igual a cero. (Recuperado de \cite {an_introduction_to_wavelets}).}}{8}{figure.18}%
+\contentsline {figure}{\numberline {2.5}{\ignorespaces Descomposición de los componentes de aproximación $A_{2^{j-1}}X$ en sus respectivos componentes de aproximación $A_{2^{j}}X$ y de detalle $D_{2^{j}}X$, pasándolos por los filtros de paso alto y bajo $\hat {g}$ y $\hat {h}$ y aplicando un submuestreo.}}{9}{figure.20}%
+\contentsline {figure}{\numberline {2.6}{\ignorespaces Componentes de detalle y aproximación en cinco niveles de los datos de \textbf {ACTINVRB}.}}{10}{figure.22}%
+\contentsline {figure}{\numberline {2.7}{\ignorespaces Reconstrucción de los componentes de aproximación $A_{2^{j+1}}X$ a partir de sus componentes de aproximación $A_{2^{j}}X$ y de detalle $D_{2^{j}}X$, pasándolos por los filtros de síntesis de paso alto y bajo $g$ y $h$ y aplicando un muestreo ascendente.}}{10}{figure.24}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Esquema de la propagación hacia adelante en una neurona de salida}}{14}{figure.30}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Esquema de la propagación hacia adelante en una neurona en una capa oculta conectada a una neurona de salida}}{15}{figure.33}%
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Esquema general de una RNN}}{19}{figure.73}%
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Esquema general de una célula LSTM (Recuperado de \cite {understanding_lstm_Olah}).}}{25}{figure.84}%
+\contentsline {figure}{\numberline {3.5}{\ignorespaces Esquema general de una célula GRU (Recuperado de Jeblad, CC BY-SA 4.0, \url {https://commons.wikimedia.org/w/index.php?curid=66234713}}}{28}{figure.92}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Precios de cierre semanal de \textbf {ACTINVRB} del 1 de enero de 2016 al 31 de diciembre de 2023}}{32}{figure.100}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces Funciones de descomposición (superior) y reconstrucción (inferior) de escala $\phi $ y de ondícula $\psi $. }}{33}{figure.102}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Extrapolación con modo \textit {Symmetric}.}}{34}{figure.104}%
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Componentes de Detalle y Aproximación de los datos de \textbf {ACTINVRB}.}}{34}{figure.106}%
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Conjunto de entrenamiento y prueba de los datos de \textbf {ACTINVRB}.}}{34}{figure.108}%
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Componentes de detalle y aproximación en cinco niveles del conjunto de datos de prueba de \textbf {ACTINVRB}.}}{35}{figure.111}%
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Arquitectura NARNN (Recuperado de \cite {DWT-NARNN}).}}{36}{figure.114}%
+\contentsline {figure}{\numberline {4.8}{\ignorespaces Arquitectura LSTMnn.}}{37}{figure.119}%
+\contentsline {figure}{\numberline {4.9}{\ignorespaces Arquitectura GRUnn.}}{38}{figure.123}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Diagrama del reforzamiento del profesor.}}{42}{figure.129}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Tabla comparativa entre combinaciones de parámetros de la NARNN: tasa de aprendizaje contra número épocas}}{43}{figure.132}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Desempeño de la NARNN en conjunto de prueba: Muestro aleatorio y temporal}}{44}{figure.134}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Tabla comparativa entre combinaciones de parámetros de la DWT-NARNN: tasa de aprendizaje contra número épocas. (Los datos resaltados en verde representan la mejor combinaciones para las componentes de alta frecuencia y azul para los de baja).}}{45}{figure.138}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces Predicciones de la DWT-LSTMnn de los componentes del conjunto de pruebas de muestro aleatorio.}}{45}{figure.140}%
+\contentsline {figure}{\numberline {5.6}{\ignorespaces Predicciones de la DWT-LSTMnn de los componentes del conjunto de pruebas de muestro temporal.}}{46}{figure.142}%
+\contentsline {figure}{\numberline {5.7}{\ignorespaces Desempeño de la DWT-NARNN en la reconstrucción del conjunto de prueba: Muestreo aleatorio y temporal.}}{46}{figure.144}%
+\contentsline {figure}{\numberline {5.8}{\ignorespaces Desempeño de la LSTMnn en conjunto de prueba: Muestreo aleatorio y temporal.}}{47}{figure.147}%
+\contentsline {figure}{\numberline {5.9}{\ignorespaces Tabla comparativa entre parámetros para componentes de alta frecuencia de la DWT-LSTMnn: tasa de aprendizaje contra número épocas por cada componente.}}{48}{figure.150}%
+\contentsline {figure}{\numberline {5.10}{\ignorespaces Predicciones de la DWT-LSTMnn de los componentes del conjunto de pruebas de muestro aleatorio.}}{48}{figure.152}%
+\contentsline {figure}{\numberline {5.11}{\ignorespaces Predicciones de la DWT-LSTMnn de los componentes del conjunto de pruebas de muestro temporal.}}{49}{figure.154}%
+\contentsline {figure}{\numberline {5.12}{\ignorespaces Desempeño de la DWT-LSTMnn en la reconstrucción del conjunto de prueba: Muestro aleatorio y temporal.}}{49}{figure.156}%
+\contentsline {figure}{\numberline {5.13}{\ignorespaces Desempeño de la GRUnn en conjunto de prueba: Muestro aleatorio y temporal}}{50}{figure.159}%
+\contentsline {figure}{\numberline {5.14}{\ignorespaces Predicciones de la DWT-GRUnn de los componentes del conjunto de pruebas de muestro aleatorio}}{51}{figure.162}%
+\contentsline {figure}{\numberline {5.15}{\ignorespaces Predicciones de la DWT-GRUnn de los componentes del conjunto de pruebas de muestro temporal}}{51}{figure.164}%
+\contentsline {figure}{\numberline {5.16}{\ignorespaces Desempeño de la DWT-GRUnn en la reconstrucción del conjunto de prueba: Muestro aleatorio y temporal.}}{52}{figure.166}%
+\contentsline {figure}{\numberline {5.17}{\ignorespaces Diagrama del entrenamiento auto-predictivo}}{53}{figure.169}%
+\contentsline {figure}{\numberline {5.18}{\ignorespaces Tabla comparativa entre parámetros de la NARNN: tasa de aprendizaje contra número épocas durante entrenamiento auto-predictivo.}}{54}{figure.172}%
+\contentsline {figure}{\numberline {5.19}{\ignorespaces Desempeño auto-predictivo de la NARNN en conjunto de prueba: Muestro aleatorio y temporal.}}{54}{figure.174}%
+\contentsline {figure}{\numberline {5.20}{\ignorespaces Tabla comparativa entre parámetros de la NARNN: tasa de aprendizaje contra número épocas y factor de decaimiento durante entrenamiento auto-predictivo.}}{56}{figure.187}%
+\contentsline {figure}{\numberline {5.21}{\ignorespaces Desempeño auto-predictivo de la NARNN en conjunto de prueba bajo la implementación del factor de decaimiento: Muestro aleatorio y temporal.}}{56}{figure.189}%
+\contentsline {figure}{\numberline {5.22}{\ignorespaces Tabla comparativa entre parámetros de la DWT-NARNN para componentes de alta frecuencia: tasa de aprendizaje contra número épocas durante entrenamiento auto-predictivo.}}{57}{figure.193}%
+\contentsline {figure}{\numberline {5.23}{\ignorespaces Predicciones auto-predictivas de la DWT-NARNNnn de los componentes del conjunto de pruebas de muestro aleatorio.}}{57}{figure.195}%
+\contentsline {figure}{\numberline {5.24}{\ignorespaces Predicciones auto-predictivas de la DWT-NARNNnn de los componentes del conjunto de pruebas de muestro temporal.}}{58}{figure.197}%
+\contentsline {figure}{\numberline {5.25}{\ignorespaces Desempeño auto-predictivo de la DWT-NARNNnn en conjunto de prueba: Muestro aleatorio y temporal.}}{58}{figure.199}%
+\contentsline {figure}{\numberline {5.26}{\ignorespaces Tabla comparativa entre parámetros de la LSTMnn: tasa de aprendizaje contra número épocas en un entrenamiento auto-predictivo.}}{59}{figure.202}%
+\contentsline {figure}{\numberline {5.27}{\ignorespaces Tabla comparativa entre parámetros de la LSTMnn: tasa de aprendizaje contra número épocas en un entrenamiento auto-predictivo con factor de decaimiento.}}{60}{figure.204}%
+\contentsline {figure}{\numberline {5.28}{\ignorespaces Desempeño auto-predictivo de la LSTMnn en conjunto de prueba: muestreo aleatorio y temporal.}}{60}{figure.206}%
+\contentsline {figure}{\numberline {5.29}{\ignorespaces Tabla comparativa entre parámetros de la DWT-LSTMnn: tasa de aprendizaje contra número épocas y factor de decaimiento durante entrenamiento auto-predictivo.}}{61}{figure.209}%
+\contentsline {figure}{\numberline {5.30}{\ignorespaces Predicciones auto-predictivas de la DWT-LSTMnn de los componentes del conjunto de pruebas de muestro aleatorio.}}{61}{figure.211}%
+\contentsline {figure}{\numberline {5.31}{\ignorespaces Predicciones auto-predictivas de la DWT-LSTMnn de los componentes del conjunto de pruebas de muestro temporal.}}{62}{figure.213}%
+\contentsline {figure}{\numberline {5.32}{\ignorespaces Desempeño auto-predictivo de la DWT-LSTMnn en conjunto de prueba: muestreo aleatorio y temporal.}}{62}{figure.215}%
+\contentsline {figure}{\numberline {5.33}{\ignorespaces Desempeño auto-predictivo de la GRUnn en conjunto de prueba.}}{63}{figure.218}%
+\contentsline {figure}{\numberline {5.34}{\ignorespaces Predicciones auto-predictivas de la DWT-GRUnn de los componentes del conjunto de pruebas de muestro aleatorio.}}{63}{figure.221}%
+\contentsline {figure}{\numberline {5.35}{\ignorespaces Predicciones auto-predictivas de la DWT-LSTMnn de los componentes del conjunto de pruebas de muestro temporal.}}{64}{figure.223}%
+\contentsline {figure}{\numberline {5.36}{\ignorespaces Desempeño auto-predictivo de la DWT-GRUnn en conjunto de prueba: muestreo aleatorio y temporal.}}{64}{figure.225}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {6.1}{\ignorespaces Desempeño del modelo NARNN}}{71}{figure.231}%
+\contentsline {figure}{\numberline {6.2}{\ignorespaces Desempeño del modelo DWT-NARNN}}{72}{figure.233}%
+\contentsline {figure}{\numberline {6.3}{\ignorespaces Desempeño del modelo LSTM}}{73}{figure.235}%
+\contentsline {figure}{\numberline {6.4}{\ignorespaces Desempeño del modelo DWT-LSTM}}{74}{figure.237}%
+\contentsline {figure}{\numberline {6.5}{\ignorespaces Desempeño del modelo GRU}}{75}{figure.239}%
+\contentsline {figure}{\numberline {6.6}{\ignorespaces Desempeño del modelo DWT-GRU}}{76}{figure.241}%
+\contentsline {figure}{\numberline {6.7}{\ignorespaces Distribución de errores de predicción de los modelos DWT-NARNN vs. NARNN.}}{78}{figure.244}%
+\contentsline {figure}{\numberline {6.8}{\ignorespaces Distribución de errores de predicción de los modelos DWT-LSTM vs. LSTM.}}{78}{figure.246}%
+\contentsline {figure}{\numberline {6.9}{\ignorespaces Distribución de errores de predicción de los modelos DWT-GRU vs. GRU.}}{79}{figure.248}%
+\contentsline {figure}{\numberline {6.10}{\ignorespaces Distribución de errores de predicción de los modelos NARNN vs. DWT-LSTM: El modelo DWT-LSTM reporta un menor error estocástico.}}{80}{figure.250}%
+\contentsline {figure}{\numberline {6.11}{\ignorespaces Distribución de errores de predicción de los modelos NARNN vs. DWT-GRU: El modelo DWT-GRU reporta un menor error estocástico.}}{80}{figure.252}%
+\contentsline {figure}{\numberline {6.12}{\ignorespaces Distribución de errores de predicción de los modelos DWT-GRU vs. DWT-LSTM: El modelo DWT-LSTM reporta un menor error estocástico.}}{81}{figure.254}%
+\contentsline {figure}{\numberline {6.13}{\ignorespaces Diagrama de caja para métrica RMSE de las predicciones de todos los conjuntos de datos.}}{82}{figure.257}%
+\contentsline {figure}{\numberline {6.14}{\ignorespaces Diagrama de caja para métrica MAPE de las predicciones de todos los conjuntos de datos.}}{82}{figure.259}%
+\contentsline {figure}{\numberline {6.15}{\ignorespaces Diagrama de caja para métrica DS de las predicciones de todos los conjuntos de datos.}}{83}{figure.261}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {7.1}{\ignorespaces Bosquejo de ventana para predicción de datos.}}{87}{figure.266}%
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
